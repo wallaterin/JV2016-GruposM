@@ -1,10 +1,11 @@
 /** Proyecto: Juego de la vida.
- *  Implementa el concepto de direccion postal según el modelo 2.
- *  Se hace validación de datos pero no se gestionan todavía los errores correspondientes.
+ *  Implementa el concepto de direccion postal segÃºn el modelo 2.
+ *  Se hace validaciÃ³n de datos pero no se gestionan todavÃ­a los errores correspondientes.
  *  @since: prototipo1.2
  *  @source: DireccionPostal.java 
- *  @version: 2.0 - 2017.02.20
+ *  @version: 2.1 - 2017.03.30
  *  @author: ajp
+ *  @author: Jesus Lopez, Grupo2 (David, Samuel, Sandra, Ruben, Alejandro, Jesus)
  */
 
 package modelo;
@@ -19,25 +20,28 @@ public class DireccionPostal implements Serializable, Cloneable {
 	private String cp;
 	private String poblacion;
 
-	public DireccionPostal(String calle, String numero, String cp, String poblacion) {
+	public DireccionPostal(String calle, String numero, String cp, String poblacion) throws ModeloException {
 		setCalle(calle);
 		setNumero(numero);
 		setCP(cp);
 		setPoblacion(poblacion);
 	}
 
-	public DireccionPostal() {
+	public DireccionPostal() throws ModeloException {
 		this("Calle", "00", "99999", "Población");
 	}
 
-	public DireccionPostal(DireccionPostal direccion) {
+	public DireccionPostal(DireccionPostal direccion) throws ModeloException {
 		this(direccion.calle, direccion.numero, direccion.cp, 
 				direccion.poblacion);
 	}
 
-	public void setCalle(String calle) {
-		assert(calleValida(calle));
-		this.calle = calle;
+	public void setCalle(String calle) throws ModeloException {
+		if(calleValida(calle)){
+			this.calle = calle;
+			return;
+		}
+		throw new ModeloException ( "La calle " + calle +" no es válida" );
 	}
 
 	/**
@@ -65,13 +69,12 @@ public class DireccionPostal implements Serializable, Cloneable {
 		return true;
 	}
 
-	public void setNumero(String numero) {
+	public void setNumero(String numero) throws ModeloException {
 		if (numeroValido(numero)) {
 			this.numero = numero;
+			return;
 		}
-		else {
-			// ERROR -mejor con assert-
-		}
+		throw new ModeloException ( "El número " + numero +" no es válido" );
 	}
 
 	/**
@@ -87,10 +90,12 @@ public class DireccionPostal implements Serializable, Cloneable {
 		return false;
 	}
 
-	public void setCP(String cp) {
-		assert(codigoPostalValido(cp));
-		this.cp = cp;
-
+	public void setCP(String cp) throws ModeloException {
+		if (codigoPostalValido(cp)){
+			this.cp = cp;
+			return;
+		}
+		throw new ModeloException ( "El código postal " + cp +" no es válido" );
 	}
 
 	/**
@@ -108,7 +113,7 @@ public class DireccionPostal implements Serializable, Cloneable {
 	}
 
 	/**
-	 * Comprueba que existe el código postal.
+	 * Comprueba que existe el cÃ³digo postal.
 	 * @param codigoPostal.
 	 * @return true si cumple.
 	 */
@@ -118,9 +123,12 @@ public class DireccionPostal implements Serializable, Cloneable {
 		return true;
 	}
 
-	public void setPoblacion(String poblacion) {
-		assert poblacionValida(poblacion);
-		this.poblacion = poblacion;
+	public void setPoblacion(String poblacion) throws ModeloException {
+		if (poblacionValida(poblacion)){
+			this.poblacion = poblacion;
+			return;
+		}
+		throw new ModeloException ( "La población " + poblacion +" no es válido" );
 	}
 
 	/**
@@ -138,12 +146,12 @@ public class DireccionPostal implements Serializable, Cloneable {
 	}
 
 	/**
-	 * Comprueba que existe la población.
+	 * Comprueba que existe la poblaciÃ³n.
 	 * @param poblacion.
 	 * @return true si cumple.
 	 */
 	private boolean poblacionAutentica(String poblacion) {
-		// Comprueba que la población no es falsa.
+		// Comprueba que la poblaciÃ³n no es falsa.
 		//--Pendiente--
 		return true;
 	}
@@ -183,8 +191,8 @@ public class DireccionPostal implements Serializable, Cloneable {
 	 * hashCode() complementa al método equals y sirve para comparar objetos de forma 
 	 * rápida en estructuras Hash. 
 	 * Cuando Java compara dos objetos en estructuras de tipo hash (HashMap, HashSet etc)
-	 * primero invoca al método hashcode y luego el equals.
-	 * @return un número entero de 32 bit.
+	 * primero invoca al mé©todo hashcode y luego el equals.
+	 * @return un nÃºmero entero de 32 bit.
 	 */
 	@Override
 	public int hashCode() {
@@ -226,8 +234,13 @@ public class DireccionPostal implements Serializable, Cloneable {
 	 */
 	@Override
 	public Object clone() {
-		// Utiliza el constructor copia.
-		return new DireccionPostal(this);
+		Object clon = null;
+		try {
+			clon = new DireccionPostal(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return clon;
 	}
 
 } // class
