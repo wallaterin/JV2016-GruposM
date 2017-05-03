@@ -40,14 +40,12 @@ public class ClaveAcceso implements Serializable, Cloneable {
 			this.texto = Criptografia.cesar(texto);
 			return;
 		}
-		throw new ModeloException("El correo: " + texto + " no es válido...");
+		throw new ModeloException("La contraseña: " + texto + " no es válida...");
 	}
 
 	private boolean ClaveAccesoValida(String texto) {
-		if (texto != null) {
-			return	texto.matches(Formato.PATRON_CONTRASEÑA);
-		}
-		return false;
+		assert texto != null; 
+		return texto.matches(Formato.PATRON_CONTRASEÑA);
 	}
 
 	@Override
@@ -96,14 +94,14 @@ public class ClaveAcceso implements Serializable, Cloneable {
 	@Override
 	public Object clone() {
 		// Utiliza el constructor copia.
-				Object clon = null;
-				try {
-					clon = new ClaveAcceso(this);
-				} 
-				catch (ModeloException e) {
-					e.printStackTrace();
-				}
-				return clon;
+		Object clon = null;
+		try {
+			clon = new ClaveAcceso(this);
+		} 
+		catch (ModeloException e) {
+			e.printStackTrace();
+		}
+		return clon;
 	}
 
 } //class
