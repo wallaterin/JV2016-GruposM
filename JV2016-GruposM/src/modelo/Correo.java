@@ -44,7 +44,7 @@ public class Correo implements Serializable, Cloneable {
 	 * @return true si cumple.
 	 */
 	private boolean direccionValida(String texto) {
-		assert texto != null;
+		assert texto != null; 
 		return util.Formato.validar(texto, Formato.PATRON_CORREO) 
 				&& correoAutentico(texto);
 	}
