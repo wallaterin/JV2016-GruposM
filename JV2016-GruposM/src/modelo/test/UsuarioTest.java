@@ -4,7 +4,7 @@
  * @since: prototipo2
  * @source: TestUsuario.java 
  * @version: 2.1 - 2017.05.03
- * @author: ajp
+ * @author: Sandra Fernández Cánovas- grupo 2
  */
 
 package modelo.test;
