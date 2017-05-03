@@ -3,8 +3,9 @@
  *  Organiza aspectos de gestión de la simulación según el modelo 2.
  *  @since: prototipo2.0
  *  @source: Patron.java 
- *  @version: 2.0 - 2017.03.20
+ *  @version: 2.1 - 2017.05.03
  *  @author: ajp
+ *  @author: JLC
  */
 
 package modelo;
@@ -24,8 +25,9 @@ public class Patron implements Serializable, Cloneable {
 	 * Utiliza métodos set... para la posible verificación.
 	 * @param nombre
 	 * @param esquema
+	 * @throws ModeloException 
 	 */
-	public Patron(String nombre, byte[][] esquema) {
+	public Patron(String nombre, byte[][] esquema) throws ModeloException {
 		setNombre(nombre);
 		setEsquema(esquema);
 	}
@@ -34,8 +36,9 @@ public class Patron implements Serializable, Cloneable {
 	 * Constructor por defecto.
 	 * Establece el valor inicial, por defecto, de cada uno de los atributos.
 	 * Llama al constructor convencional de la propia clase.
+	 * @throws ModeloException 
 	 */
-	public Patron() {
+	public Patron() throws ModeloException {
 		this("NombrePatron", new byte[1][1]);
 	}
 
@@ -45,8 +48,9 @@ public class Patron implements Serializable, Cloneable {
 	 * los valores obtenidos de un objeto de su misma clase.
 	 * El atributo esquema es clonado utilizando utilidades de clonación de arrays.
 	 * @param p
+	 * @throws ModeloException 
 	 */
-	public Patron(Patron p) {
+	public Patron(Patron p) throws ModeloException {
 		this(p.nombre, p.esquema);
 		this.esquema = new byte[p.esquema.length][p.esquema.length];	
 		for (int i=0; i <p.esquema.length; i++) {
@@ -62,8 +66,9 @@ public class Patron implements Serializable, Cloneable {
 	 * @param filas
 	 * @param columnas
 	 * @param imagenPatron
+	 * @throws ModeloException 
 	 */
-	public Patron(String nombre, int filas, int columnas, String imagenPatron) {
+	public Patron(String nombre, int filas, int columnas, String imagenPatron) throws ModeloException {
 		setNombre(nombre);
 
 		byte [][] esquema = new byte [filas][columnas];
@@ -87,28 +92,30 @@ public class Patron implements Serializable, Cloneable {
 
 	/**
 	 * @param nombre the nombre to set
+	 * @throws ModeloException 
 	 */
-	public void setNombre(String nombre) {
+	public void setNombre(String nombre) throws ModeloException {
+		
 		if (nombre != null) {
 			this.nombre = nombre;
+			return;
 		}
-		else {
-			this.nombre = "NombrePatron";
-		}
+		throw new ModeloException ( "El Nombre no puede estar vacio" );
+	
 	}
 
 	/**
 	 * @param esquema the esquema to set
+	 * @throws ModeloException 
 	 */
-	public void setEsquema(byte[][] esquema) {
+	public void setEsquema(byte[][] esquema) throws ModeloException {
 
-		if (esquema == null || esquema.length == 0) {
-			byte[][] aux = {{0}};
-			this.esquema  = aux;
-		}		
-		else {
-			this.esquema = esquema;
-		}
+			if (esquema != null || esquema.length != 0) {
+				this.esquema = esquema;
+				return;
+			}		
+			throw new ModeloException ( "El patrón no es válido" );
+
 	}
 
 	@Override
@@ -160,8 +167,13 @@ public class Patron implements Serializable, Cloneable {
 	 */
 	@Override
 	public Object clone() {
-		// Utiliza el constructor copia.
-		return new Patron(this);
+		Object clon = null;
+		try {
+			clon = new Patron(this);
+		} catch (Exception e) {
+		
+		}
+		return clon;
 	}
 
 } // class
