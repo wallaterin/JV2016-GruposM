@@ -3,8 +3,8 @@
  *  Se hace validación de datos pero no se gestionan todavía los errores correspondientes.
  *  @since: prototipo1.0
  *  @source: Persona.java 
- *  @version: 2.0 - 2017.03.16 
- *  @author: ajp
+ *  @version: 2.1 - 2017.05.03 
+ *  @author: Pablo Gil Frutos
  */
 
 package modelo;
@@ -31,9 +31,10 @@ public  abstract class Persona implements Serializable, Cloneable {
 	 * @param domicilio
 	 * @param correo
 	 * @param fechaNacimiento
+	 * @throws ModeloException 
 	 */
 	public Persona(Nif nif, String nombre, String apellidos,
-			DireccionPostal domicilio, Correo correo, Fecha fechaNacimiento) {
+			DireccionPostal domicilio, Correo correo, Fecha fechaNacimiento) throws ModeloException {
 		setNif(nif);
 		setNombre(nombre);
 		setApellidos(apellidos);
@@ -46,7 +47,7 @@ public  abstract class Persona implements Serializable, Cloneable {
 		return nif;
 	}
 
-	public void setNif(Nif nif) {
+	public void setNif(Nif nif) throws ModeloException {
 		assert nif != null;
 		this.nif = nif;
 	}
@@ -55,9 +56,12 @@ public  abstract class Persona implements Serializable, Cloneable {
 		return nombre;
 	}
 
-	public void setNombre(String nombre) {	
-		assert nombreValido(nombre);
-		this.nombre = nombre;
+	public void setNombre(String nombre) throws ModeloException {	
+		if (nombreValido(nombre)) {
+			this.nombre = nombre;
+			return;
+		}
+		throw new ModeloException ("El formato del nombre: " + nombre + " no es valido...");
 	}
 
 	private boolean nombreValido(String nombre) {
@@ -71,9 +75,12 @@ public  abstract class Persona implements Serializable, Cloneable {
 		return apellidos;
 	}
 
-	public void setApellidos(String apellidos) {
-		assert apellidoValido(apellidos);
-		this.apellidos = apellidos;
+	public void setApellidos(String apellidos) throws ModeloException {
+		if (apellidoValido(apellidos)) {
+			this.apellidos = apellidos;
+			return;
+		}
+		throw new ModeloException ("El formato de los apellidos: " + apellidos + " no son valido...");
 	}
 
 	private boolean apellidoValido(String apellidos) {
@@ -96,9 +103,12 @@ public  abstract class Persona implements Serializable, Cloneable {
 		return fechaNacimiento;
 	}
 
-	public void setFechaNacimiento(Fecha fechaNacimiento) {
-		assert fechaNacimientoValida(fechaNacimiento);
-		this.fechaNacimiento = fechaNacimiento;
+	public void setFechaNacimiento(Fecha fechaNacimiento) throws ModeloException {
+		if (fechaNacimientoValida(fechaNacimiento)) {
+			this.fechaNacimiento = fechaNacimiento;
+			return;
+		}
+		throw new ModeloException ("El formato de la fecha de nacimiento: " + fechaNacimiento + " no es valida...");
 	}
 
 	/**
@@ -120,9 +130,11 @@ public  abstract class Persona implements Serializable, Cloneable {
 	 * @return true si cumple.
 	 */
 	private boolean fechaNacimientoCoherente(Fecha fechaNacimiento) {
-		// Comprueba que fechaNacimiento no es, por ejemplo, del futuro
-		// --Pendiente--
-		return true;
+		Fecha fechaActual = util.Fecha.Fecha();
+		if (fechaNacimiento.compareTo(fechaActual.addAños(-18))) {
+			return true;
+		}
+		else return false;
 	}
 
 	public Correo getCorreo() {
