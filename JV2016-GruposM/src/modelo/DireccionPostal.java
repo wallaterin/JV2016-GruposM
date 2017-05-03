@@ -1,6 +1,6 @@
 /** Proyecto: Juego de la vida.
- *  Implementa el concepto de direccion postal segÃºn el modelo 2.
- *  Se hace validaciÃ³n de datos pero no se gestionan todavÃ­a los errores correspondientes.
+ *  Implementa el concepto de direccion postal según el modelo 2.
+ *  Se hace validacialón de datos pero no se gestionan todavÃ­a los errores correspondientes.
  *  @since: prototipo1.2
  *  @source: DireccionPostal.java 
  *  @version: 2.1 - 2017.03.30
@@ -50,12 +50,9 @@ public class DireccionPostal implements Serializable, Cloneable {
 	 * @return true si cumple.
 	 */
 	private boolean calleValida(String calle) {
-		if (calle != null
-				&& util.Formato.validar(calle, Formato.PATRON_NOMBRE_VIA)
-				&& calleAutentica(calle)) {
-			return true;
-		}
-		return false;
+		assert calle != null;
+				return util.Formato.validar(calle, Formato.PATRON_NOMBRE_VIA)
+				&& calleAutentica(calle);
 	}
 
 	/**
@@ -83,11 +80,9 @@ public class DireccionPostal implements Serializable, Cloneable {
 	 * @return true si cumple.
 	 */
 	private boolean numeroValido(String numero) {
-		if (numero != null
-				&& util.Formato.validar(numero, Formato.PATRON_NUMERO_POSTAL)) {
-			return true;
-		}
-		return false;
+		assert numero != null;
+				return util.Formato.validar(numero, Formato.PATRON_NUMERO_POSTAL);
+			
 	}
 
 	public void setCP(String cp) throws ModeloException {
@@ -104,12 +99,9 @@ public class DireccionPostal implements Serializable, Cloneable {
 	 * @return true si cumple.
 	 */
 	private boolean codigoPostalValido(String codigoPostal) {
-		if (codigoPostal != null
-				&& util.Formato.validar(codigoPostal, Formato.PATRON_CP) 
-				&& codigoPostalAutentico(codigoPostal)) {
-			return true;
-		}
-		return false;
+		assert codigoPostal != null;
+				return util.Formato.validar(codigoPostal, Formato.PATRON_CP) 
+				&& codigoPostalAutentico(codigoPostal);
 	}
 
 	/**
@@ -137,12 +129,11 @@ public class DireccionPostal implements Serializable, Cloneable {
 	 * @return true si cumple.
 	 */
 	private boolean poblacionValida(String poblacion) {
-		if (poblacion != null
-				&& util.Formato.validar(poblacion, Formato.PATRON_TOPONIMO)
-				&& poblacionAutentica(poblacion)) {
-			return true;
-		}
-		return false;
+		
+		assert poblacion != null;
+		return util.Formato.validar(poblacion, Formato.PATRON_TOPONIMO)
+			&& poblacionAutentica(poblacion);
+		
 	}
 
 	/**
@@ -151,7 +142,7 @@ public class DireccionPostal implements Serializable, Cloneable {
 	 * @return true si cumple.
 	 */
 	private boolean poblacionAutentica(String poblacion) {
-		// Comprueba que la poblaciÃ³n no es falsa.
+		// Comprueba que la población no es falsa.
 		//--Pendiente--
 		return true;
 	}
