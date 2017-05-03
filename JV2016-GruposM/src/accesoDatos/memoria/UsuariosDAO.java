@@ -5,7 +5,7 @@
  * Colabora en el patron Fachada.
  * @since: prototipo2.0
  * @source: UsuariosDAO.java 
- * @version: 2.0 - 2017/03/23 
+ * @version: 2.1 - 2017/03/23 
  * @author: ajp
  */
 
@@ -19,6 +19,7 @@ import accesoDatos.OperacionesDAO;
 import modelo.ClaveAcceso;
 import modelo.Correo;
 import modelo.DireccionPostal;
+import modelo.ModeloException;
 import modelo.Nif;
 import modelo.Usuario;
 import modelo.Usuario.RolUsuario;
@@ -36,8 +37,9 @@ public class UsuariosDAO  implements OperacionesDAO {
 	/**
 	 * Constructor por defecto de uso interno.
 	 * Sólo se ejecutará una vez.
+	 * @throws ModeloException 
 	 */
-	private UsuariosDAO()  {
+	private UsuariosDAO() throws ModeloException  {
 		datosUsuarios = new ArrayList<Usuario>();
 		equivalenciasId = new Hashtable<String, String>();
 		cargarPredeterminados();
@@ -51,16 +53,20 @@ public class UsuariosDAO  implements OperacionesDAO {
 	 *  @return instancia
 	 */
 	public static UsuariosDAO getInstancia() {
-		if (instancia == null) {
-			instancia = new UsuariosDAO();
+	
+			try {
+				instancia = new UsuariosDAO();
+			} catch (ModeloException e) {
+			
 		}
 		return instancia;
 	}
 
 	/**
 	 *  Método para generar de datos predeterminados.
+	 * @throws ModeloException 
 	 */
-	private void cargarPredeterminados() {
+	private void cargarPredeterminados() throws ModeloException {
 		String nombreUsr = "Admin";
 		String password = "Miau#0";	
 		Usuario usrPredeterminado = new Usuario(new Nif("00000000T"), nombreUsr, "Admin Admin", 
@@ -78,6 +84,7 @@ public class UsuariosDAO  implements OperacionesDAO {
 				new Fecha(), new ClaveAcceso(password), RolUsuario.INVITADO);
 		datosUsuarios.add(usrPredeterminado);
 		registrarEquivalenciaId(usrPredeterminado);
+		//
 	}
 
 	/**
