@@ -4,7 +4,7 @@
  * Colabora en el patron Fachada.
  * @since: prototipo2.0
  * @source: PatronesDAO.java 
- * @version: 2.0 - 2017/03/23
+ * @version: 2.1 - 2017/04/03
  * @author: ajp
  */
 
@@ -12,6 +12,7 @@ package accesoDatos.memoria;
 
 import java.util.ArrayList;
 
+import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
 import modelo.Patron;
 
@@ -19,10 +20,10 @@ public class PatronesDAO implements OperacionesDAO {
 
 	// Requerido por el Singleton 
 	private static PatronesDAO instancia = null;
-
+	
 	// Elemento de almacenamiento. 
 	private static ArrayList<Patron> datosPatrones;
-
+	
 	/**
 	 * Constructor por defecto de uso interno.
 	 * Sólo se ejecutará una vez.
@@ -45,7 +46,7 @@ public class PatronesDAO implements OperacionesDAO {
 		}
 		return instancia;
 	}
-
+	
 	/**
 	 *  Método para generar datos predeterminados.
 	 */
@@ -60,7 +61,7 @@ public class PatronesDAO implements OperacionesDAO {
 		Patron patronDemo = new Patron("PatronDemo", esquemaDemo);
 		datosPatrones.add(patronDemo);
 	}
-
+	
 	/**
 	 *  Cierra datos.
 	 */
@@ -68,7 +69,7 @@ public class PatronesDAO implements OperacionesDAO {
 	public void cerrar() {
 		// Nada que hacer si no hay persistencia.
 	}
-
+	
 	//OPERACIONES DAO
 	/**
 	 * Búsqueda binaria de un Patron dado su nombre.
@@ -85,7 +86,7 @@ public class PatronesDAO implements OperacionesDAO {
 		}
 		return null;
 	}
-
+	
 	/**
 	 *  Obtiene por búsqueda binaria, la posición que ocupa, o ocuparía,  un Patron en 
 	 *  la estructura.
@@ -113,7 +114,7 @@ public class PatronesDAO implements OperacionesDAO {
 		}	
 		return -(inicio + 1);					// Posición que ocuparía -negativo- base 1
 	}
-
+	
 	/**
 	 * Búsqueda de Patron dado un objeto, reenvía al método que utiliza nombre.
 	 * @param obj - el Patron a buscar.
@@ -123,15 +124,15 @@ public class PatronesDAO implements OperacionesDAO {
 	public Patron obtener(Object obj)  {
 		return this.obtener(((Patron) obj).getNombre());
 	}
-
+	
 	/**
 	 *  Alta de un nuevo Patron en orden y sin repeticiones según el campo nombre. 
 	 *  Busca previamente la posición que le corresponde por búsqueda binaria.
 	 * @param obj - Patron a almacenar.
-	 * @ - si ya existe.
+	 * @throws DatosException - si ya existe.
 	 */
 	@Override
-	public void alta(Object obj)  {
+	public void alta(Object obj) throws DatosException {
 		assert obj != null;
 		Patron patronNuevo = (Patron) obj;										// Para conversión cast
 		int posicionInsercion = obtenerPosicion(patronNuevo.getNombre()); 
@@ -139,30 +140,32 @@ public class PatronesDAO implements OperacionesDAO {
 			datosPatrones.add(-posicionInsercion - 1, patronNuevo); 			// Inserta la sesión en orden.
 			return;
 		}
+		throw new DatosException("(ALTA) El Patron: " + patronNuevo.getNombre() + " ya existe...");
 	}
 
 	/**
 	 * Elimina el objeto, dado el id utilizado para el almacenamiento.
 	 * @param nombre - el nombre del Patron a eliminar.
-	 * @return - el Patron eliminado. null - si no existe.
+	 * @return - el Patron eliminado.
+	 * @throws DatosException - si no existe.
 	 */
 	@Override
-	public Patron baja(String nombre)  {
+	public Patron baja(String nombre) throws DatosException {
 		assert (nombre != null);
 		int posicion = obtenerPosicion(nombre); 									// En base 1
 		if (posicion > 0) {
 			return datosPatrones.remove(posicion - 1); 								// En base 0
 		}
-		return null;
+		throw new DatosException("(BAJA) El Patron: " + nombre + " no existe...");
 	}
-
+	
 	/**
 	 *  Actualiza datos de un Mundo reemplazando el almacenado por el recibido.
 	 *	@param obj - Patron con las modificaciones.
-	 *  @ - si no existe.
+	 *  @throws DatosException - si no existe.
 	 */
 	@Override
-	public void actualizar(Object obj)  {
+	public void actualizar(Object obj) throws DatosException {
 		assert obj != null;
 		Patron patronActualizado = (Patron) obj;									// Para conversión cast
 		int posicion = obtenerPosicion(patronActualizado.getNombre()); 				// En base 1
@@ -171,6 +174,7 @@ public class PatronesDAO implements OperacionesDAO {
 			datosPatrones.set(posicion - 1, patronActualizado);  					// En base 0		
 			return;
 		}
+		throw new DatosException("(ACTUALIZAR) El Patron: " + patronActualizado.getNombre() + " no existe...");
 	}
 
 	/**
@@ -195,5 +199,5 @@ public class PatronesDAO implements OperacionesDAO {
 	public void borrarTodo() {
 		instancia = null;
 	}
-
+	
 } //class
