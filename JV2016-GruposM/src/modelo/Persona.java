@@ -1,10 +1,12 @@
-/** Proyecto: Juego de la vida.
- *  Implementa el concepto de Persona un sistema según el modelo 2. 
- *  Se hace validación de datos pero no se gestionan todavía los errores correspondientes.
- *  @since: prototipo1.0
- *  @source: Persona.java 
- *  @version: 2.1 - 2017.05.03 
- *  @author: Pablo Gil Frutos
+
+/** 
+ * Proyecto: Juego de la vida.
+ * Implementa el concepto de Persona un sistema según el modelo 2. 
+ * Se hace validación de datos pero no se gestionan todavía los errores correspondiente.
+ * @since: prototipo1.0
+ * @source: Persona.java 
+ * @version: 2.1 - 2017.04.16 
+ * @author: ajp
  */
 
 package modelo;
@@ -65,10 +67,8 @@ public  abstract class Persona implements Serializable, Cloneable {
 	}
 
 	private boolean nombreValido(String nombre) {
-		if (nombre != null) {
-			return	nombre.matches(Formato.PATRON_NOMBRE_PERSONA);
-		}
-		return false;
+		assert nombre != null;
+		return	nombre.matches(Formato.PATRON_NOMBRE_PERSONA);
 	}
 
 	public String getApellidos() {
@@ -84,10 +84,8 @@ public  abstract class Persona implements Serializable, Cloneable {
 	}
 
 	private boolean apellidoValido(String apellidos) {
-		if (apellidos != null) {
-			return	nombre.matches(Formato.PATRON_APELLIDOS);
-		}
-		return false;
+		assert apellidos != null;
+		return	nombre.matches(Formato.PATRON_APELLIDOS);
 	}
 
 	public DireccionPostal getDomicilio() {
@@ -117,11 +115,8 @@ public  abstract class Persona implements Serializable, Cloneable {
 	 * @return true si cumple.
 	 */
 	private boolean fechaNacimientoValida(Fecha fechaNacimiento) {
-		if (fechaNacimiento != null
-				&& fechaNacimientoCoherente(fechaNacimiento)) {
-			return true;
-		}
-		return false;
+		assert fechaNacimiento != null;
+		return fechaNacimientoCoherente(fechaNacimiento);
 	}
 
 	/**
