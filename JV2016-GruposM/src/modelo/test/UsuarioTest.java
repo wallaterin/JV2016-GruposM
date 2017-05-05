@@ -118,7 +118,11 @@ public class UsuarioTest {
 	@Test
 	public void testSetClaveAccesoNull() {
 		try {
-			usuario1.setNif(null);
+			try {
+				usuario1.setNif(null);
+			} catch (ModeloException e) {
+				
+			}
 			fail("No debe llegar aquí...");
 		} catch (AssertionError e) { }
 
