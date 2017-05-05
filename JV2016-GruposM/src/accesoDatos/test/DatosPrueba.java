@@ -97,13 +97,13 @@ public class DatosPrueba {
 	private static void cargarSimulacionesPrueba() {
 		Usuario usrPrueba = fachada.obtenerUsuario("III1R");
 		Mundo mundoPrueba = fachada.obtenerMundo("MundoDemo");
-		Simulacion simulacionPrueba1 = new Simulacion(usrPrueba, new Fecha(), mundoPrueba, EstadoSimulacion.PREPARADA);
-		Simulacion simulacionPrueba2 = new Simulacion(usrPrueba, new Fecha(), mundoPrueba, EstadoSimulacion.PREPARADA);
 		try {
+			Simulacion simulacionPrueba1 = new Simulacion(usrPrueba, new Fecha(), mundoPrueba, EstadoSimulacion.PREPARADA);
+			Simulacion simulacionPrueba2 = new Simulacion(usrPrueba, new Fecha(), mundoPrueba, EstadoSimulacion.PREPARADA);
 			fachada.altaSimulacion(simulacionPrueba1);
 			fachada.altaSimulacion(simulacionPrueba2);
 		} 
-		catch (DatosException e) { }
+		catch (DatosException | ModeloException e) { }
 	}
 
 	/**

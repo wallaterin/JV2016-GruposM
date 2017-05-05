@@ -1,12 +1,11 @@
 /** 
  * Proyecto: Juego de la vida.
- * Implementa el concepto de dirección de correo electrónico según el modelo 2.1.
+ * Implementa el concepto de dirección de correo electrónico según el modelo 2.
  * Se hace validación de datos pero no se gestionan todavía los errores correspondientes. 
  * @since: prototipo1.2
  * @source: Correo.java 
- * @version: 2.1 - 2017.04.27
+ * @version: 2.1 - 2017.04.25
  * @author: ajp
- * @author: Grupo 1
  */
 
 package modelo;
@@ -17,7 +16,7 @@ import util.Formato;
 public class Correo implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private String texto;
-
+	
 	public Correo(String texto) throws ModeloException {
 		setTexto(texto);
 	}
@@ -29,24 +28,23 @@ public class Correo implements Serializable, Cloneable {
 	public Correo(Correo correo) throws ModeloException {
 		this(correo.texto);
 	}
-
+	
 	public void setTexto(String texto) throws ModeloException {
 		if (direccionValida(texto)) {
 			this.texto = texto;
 			return;
 		}
-		throw new ModeloException("El correo: " + texto + " no es válido...");
+		throw new ModeloException("El correo: " + texto + " no es válido...");	
 	}
-
+	
 	/**
 	 * Comprueba validez de una dirección de correo.
 	 * @param texto.
 	 * @return true si cumple.
 	 */
 	private boolean direccionValida(String texto) {
-		assert texto != null; 
-		return util.Formato.validar(texto, Formato.PATRON_CORREO) 
-				&& correoAutentico(texto);
+		assert texto != null;
+		return util.Formato.validar(texto, Formato.PATRON_CORREO) && correoAutentico(texto);
 	}
 
 	/**
@@ -62,19 +60,19 @@ public class Correo implements Serializable, Cloneable {
 	public String getTexto() {
 		return texto;
 	}
-
+	
 	@Override
 	public String toString() {
 		return texto;
 	}
-
+	
 	/**
 	 * hashcode() complementa al método equals y sirve para comparar objetos de forma 
 	 * rápida en estructuras Hash. 
 	 * Cuando Java compara dos objetos en estructuras de tipo hash (HashMap, HashSet etc)
 	 * primero invoca al método hashcode y luego el equals.
 	 * @return un número entero de 32 bit.
-	 */
+	*/
 	@Override
 	public int hashCode() {
 		final int primo = 31;
@@ -88,7 +86,7 @@ public class Correo implements Serializable, Cloneable {
 	 * Son de la misma clase.
 	 * Tienen los mismos valores en los atributos; o son el mismo objeto.
 	 * @return falso si no cumple las condiciones.
-	 */
+	*/
 	@Override
 	public boolean equals(Object obj) {
 		if (obj != null && getClass() == obj.getClass()) {
@@ -101,11 +99,11 @@ public class Correo implements Serializable, Cloneable {
 		}
 		return false;
 	}
-
+	
 	/**
 	 * Genera un clon del propio objeto realizando una copia profunda.
 	 * @return el objeto clonado.
-	 */
+	*/
 	@Override
 	public Object clone() {
 		// Utiliza el constructor copia.
@@ -113,10 +111,8 @@ public class Correo implements Serializable, Cloneable {
 		try {
 			clon = new Correo(this);
 		} 
-		catch (ModeloException e) {
-			e.printStackTrace();
-		}
+		catch (ModeloException e) { }
 		return clon;
 	}
-
+	
 } // class

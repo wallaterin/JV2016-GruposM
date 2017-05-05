@@ -64,7 +64,12 @@ public class DatosTest {
 		catch (ModeloException e) { }
 		sesionPrueba = new SesionUsuario(fachada.obtenerUsuario("III1R"), new Fecha(), EstadoSesion.EN_PREPARACION);
 		mundoPrueba = fachada.obtenerMundo("MundoDemo");
-		simulacionPrueba = new Simulacion(fachada.obtenerUsuario("III1R"), new Fecha(), new Mundo(), EstadoSimulacion.PREPARADA);
+		try {
+			simulacionPrueba = new Simulacion(fachada.obtenerUsuario("III1R"), new Fecha(), new Mundo(), EstadoSimulacion.PREPARADA);
+		} 
+		catch (ModeloException e) {
+			e.printStackTrace();
+		}
 		patronPrueba = fachada.obtenerPatron("PatronDemo");
 	}
 

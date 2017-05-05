@@ -3,9 +3,8 @@
  * Es un punto del espacio donde se ubica un Patron de celulas, según el modelo 2
  * @since: prototipo2.0
  * @source: Posicion.java 
- * @version: 2.1 - 2017.05.03
+ * @version: 2.1 - 2017.04.11
  * @author: ajp
- * @author: Victor Ruiz Grupo 4
  */
 
 package modelo;
@@ -79,9 +78,11 @@ public class Posicion implements Cloneable, Serializable {
 	public void setY(int y) throws ModeloException {
 		if(posicionValida(y)){
 		this.y = y;
+		return;
 		}
-		throw new ModeloException("No se permiten posciones negativas");
+		throw new ModeloException("No se permiten posiciones negativas");
 	}
+
 	private boolean posicionValida(int posicion){
 		if(posicion>=0){
 			return true;
@@ -136,12 +137,11 @@ public class Posicion implements Cloneable, Serializable {
 	 */
 	@Override
 	public Object clone() {
-		//Utiliza el constructor copia.
+		// Utiliza el constructor copia.
 		Object clon = null;
 		try {
 			clon = new Posicion(this);
-		}
-		catch (ModeloException e) {}
+		} catch (ModeloException e) { }
 		return clon;
 	}
 

@@ -1,7 +1,6 @@
 /** 
  * Proyecto: Juego de la vida.
  * Representa el espacio y las leyes que determinan un mundo de simulación del según el modelo 2.
- * Se hace validación de datos pero no se gestionan todavía los errores correspondientes. 
  * @since: prototipo2.0
  * @source: Mundo.java 
  * @version: 2.0 - 2017.03.11
@@ -16,6 +15,8 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+
+import config.Configuracion;
 
 public class Mundo implements Leyes, Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
@@ -64,14 +65,14 @@ public class Mundo implements Leyes, Serializable, Cloneable {
 	public Mundo(Mundo m) {
 		this(m.nombre, new ArrayList<Integer>(m.constantes), 
 				new Hashtable<Patron,Posicion>(m.distribucion), m.espacio);
-
+		
 		this.espacio = new byte[m.espacio.length][m.espacio.length];
-
+		
 		for (int i=0; i <m.espacio.length; i++)
 			this.espacio[i] = Arrays.copyOf(m.espacio[i], m.espacio[i].length);
-		//System.arraycopy(m.espacio[i], 0, this.espacio[i], 0, m.espacio[i].length);	
+			//System.arraycopy(m.espacio[i], 0, this.espacio[i], 0, m.espacio[i].length);	
 	}
-
+	
 	public String getNombre() {
 		return nombre;
 	}
@@ -83,7 +84,7 @@ public class Mundo implements Leyes, Serializable, Cloneable {
 	public Map<Patron, Posicion> getDistribucion() {
 		return distribucion;
 	}
-
+	
 
 	public byte[][] getEspacio() {
 		return espacio;
@@ -113,7 +114,7 @@ public class Mundo implements Leyes, Serializable, Cloneable {
 	}
 
 	public void setEspacio(byte[][] espacio) {
-		int tamaño = 12;
+		int tamaño = new Integer(Configuracion.get().getProperty("mundo.sizePredeterminado"));
 		if (espacio == null || espacio.length == 0) {
 			this.espacio = new byte[tamaño][tamaño];
 			for (int i=0; i < this.espacio.length; i++) {
@@ -198,7 +199,7 @@ public class Mundo implements Leyes, Serializable, Cloneable {
 	 * Son de la misma clase.
 	 * Tienen los mismos valores en los atributos; o son el mismo objeto.
 	 * @return falso si no cumple las condiciones.
-	 */
+	*/
 	@Override
 	public boolean equals(Object obj) {
 		if (obj != null && getClass() == obj.getClass()) {
@@ -219,11 +220,11 @@ public class Mundo implements Leyes, Serializable, Cloneable {
 	/**
 	 * Genera un clon del propio objeto realizando una copia profunda.
 	 * @return el objeto clonado.
-	 */
+	*/
 	@Override
 	public Object clone() {
 		// Utiliza el constructor copia.
 		return new Mundo(this);
 	}
-
+	
 } //class

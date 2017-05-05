@@ -1,11 +1,11 @@
 /** 
  * Proyecto: Juego de la vida.
- * Implementa el concepto de Usuario de un sistema según el modelo 2.1. 
+ * Implementa el concepto de Usuario de un sistema según el modelo 2. 
  * Se hace validación de datos pero no se gestionan todavía los errores correspondientes.
  * @since: prototipo1.0
  * @source: Usuario.java 
- * @version: 2.1 - 2017.04.30 
- * @author: David Olivera Jaén - Grupo 2
+ * @version: 2.1 - 2017.04.16 
+ * @author: ajp
  */
 
 package modelo;
@@ -82,9 +82,8 @@ public class Usuario extends Persona {
 	/**
 	 * Constructor por defecto. Utiliza constructor convencional.
 	 * @throws ModeloException 
-	 * @ 
 	 */
-	public Usuario() throws ModeloException  {
+	public Usuario() throws ModeloException {
 		this(new Nif(), "Nombre", "Apellidos1 Apellido2", new DireccionPostal(), new Correo(), 
 				new Fecha(), new Fecha(), new ClaveAcceso(), RolUsuario.NORMAL);
 	}
@@ -93,9 +92,8 @@ public class Usuario extends Persona {
 	 * Constructor copia. Utiliza constructor convencional.
 	 * @param usr
 	 * @throws ModeloException 
-	 * @ 
 	 */
-	public Usuario(Usuario usr) throws ModeloException  {
+	public Usuario(Usuario usr) throws ModeloException {
 		this(new Nif(usr.nif), usr.nombre, usr.apellidos, usr.domicilio, usr.correo,
 				usr.fechaNacimiento, usr.fechaAlta, new ClaveAcceso(usr.claveAcceso), usr.rol);
 	}
@@ -108,12 +106,12 @@ public class Usuario extends Persona {
 		return fechaAlta;
 	}
 
-	public void setFechaAlta(Fecha fechaAlta) {
-		try {
-			assert(fechaAltaValida(fechaAlta));
-		} catch (Exception e) {
-		}
+	public void setFechaAlta(Fecha fechaAlta) throws ModeloException {
+		if (fechaAltaValida(fechaAlta)) {
 		this.fechaAlta = fechaAlta;
+		return;
+		}
+		throw new ModeloException("La fecha de alta: " + fechaAlta + " no es válida...");
 	}
 
 	/**
@@ -122,11 +120,8 @@ public class Usuario extends Persona {
 	 * @return true si cumple.
 	 */
 	private boolean fechaAltaValida(Fecha fechaAlta) {
-		if (fechaAlta != null
-				&& fechaAltaCoherente(fechaAlta)) {
-			return true;
-		}
-		return false;
+		assert fechaAlta != null;
+		return fechaAltaCoherente(fechaAlta);
 	}
 
 	/**
@@ -145,10 +140,7 @@ public class Usuario extends Persona {
 	}
 
 	public void setClaveAcceso(ClaveAcceso claveAcceso) {
-		try {
-			assert (claveAcceso != null) ;
-		} catch (Exception e) {
-		}
+		assert claveAcceso != null;
 		this.claveAcceso = claveAcceso;
 	}
 
@@ -158,10 +150,7 @@ public class Usuario extends Persona {
 
 
 	public void setRol(RolUsuario rol) {
-		try {
-			assert (rol != null) ;
-		} catch (Exception e) {
-		}
+		assert rol != null;
 		this.rol = rol;
 	}
 
@@ -238,9 +227,7 @@ public class Usuario extends Persona {
 		Object clon = null;
 		try {
 			clon = new Usuario(this);
-		} 
-		catch (ModeloException e) {
-		}
+		} catch (ModeloException e) { }
 		return clon;
 	}
 

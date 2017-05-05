@@ -1,12 +1,11 @@
 /** 
  * Proyecto: Juego de la vida.
- * Implementa el concepto de contraseña de seguridad según el modelo 2.1.
+ * Implementa el concepto de contraseña de seguridad según el modelo 2.
  * Se hace validación de datos pero no se gestionan todavía los errores correspondientes.
  * @since: prototipo1.2
  * @source: ClaveAcceso.java 
- * @version: 2.1 - 2017.04.28
+ * @version: 2.1 - 2017.04.25
  * @author: ajp
- * @author: Grupo 1
  */
 
 package modelo;
@@ -14,6 +13,7 @@ package modelo;
 import java.io.Serializable;
 import util.Criptografia;
 import util.Formato;
+import util.UtilException;
 
 public class ClaveAcceso implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
@@ -23,7 +23,7 @@ public class ClaveAcceso implements Serializable, Cloneable {
 		setTexto(texto);
 	}
 
-	public ClaveAcceso() throws ModeloException  {
+	public ClaveAcceso() throws ModeloException {
 		this("Miau#0");
 	}
 
@@ -35,17 +35,17 @@ public class ClaveAcceso implements Serializable, Cloneable {
 		return texto;
 	}
 
-	public void setTexto(String texto) throws ModeloException  {
+	public void setTexto(String texto) throws ModeloException {
 		if (ClaveAccesoValida(texto)) {
 			this.texto = Criptografia.cesar(texto);
 			return;
 		}
-		throw new ModeloException("La contraseña: " + texto + " no es válida...");
+		throw new ModeloException("El formato de la contraseña no es válido...");
 	}
 
 	private boolean ClaveAccesoValida(String texto) {
-		assert texto != null; 
-		return texto.matches(Formato.PATRON_CONTRASEÑA);
+		assert texto != null;
+		return	texto.matches(Formato.PATRON_CONTRASEÑA);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class ClaveAcceso implements Serializable, Cloneable {
 	 * Cuando Java compara dos objetos en estructuras de tipo hash (HashMap, HashSet etc)
 	 * primero invoca al método hashcode y luego el equals.
 	 * @return un número entero de 32 bit.
-	 */
+	*/
 	@Override
 	public int hashCode() {
 		final int primo = 31;
@@ -73,7 +73,7 @@ public class ClaveAcceso implements Serializable, Cloneable {
 	 * Son de la misma clase.
 	 * Tienen los mismos valores en los atributos; o son el mismo objeto.
 	 * @return falso si no cumple las condiciones.
-	 */
+	*/
 	@Override
 	public boolean equals(Object obj) {
 		if (obj != null && getClass() == obj.getClass()) {
@@ -90,7 +90,7 @@ public class ClaveAcceso implements Serializable, Cloneable {
 	/**
 	 * Genera un clon del propio objeto realizando una copia profunda.
 	 * @return el objeto clonado.
-	 */
+	*/
 	@Override
 	public Object clone() {
 		// Utiliza el constructor copia.
@@ -98,9 +98,7 @@ public class ClaveAcceso implements Serializable, Cloneable {
 		try {
 			clon = new ClaveAcceso(this);
 		} 
-		catch (ModeloException e) {
-			e.printStackTrace();
-		}
+		catch (ModeloException e) { }
 		return clon;
 	}
 

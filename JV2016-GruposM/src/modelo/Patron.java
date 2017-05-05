@@ -3,9 +3,8 @@
  *  Organiza aspectos de gestión de la simulación según el modelo 2.
  *  @since: prototipo2.0
  *  @source: Patron.java 
- *  @version: 2.1 - 2017.05.03
+ *  @version: 2.0 - 2017.03.20
  *  @author: ajp
- *  @author: JLC
  */
 
 package modelo;
@@ -17,7 +16,7 @@ public class Patron implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private String nombre;
 	private byte[][] esquema;
-
+	
 	/**
 	 * Constructor convencional.
 	 * Establece el valor inicial de cada uno de los atributos.
@@ -25,9 +24,8 @@ public class Patron implements Serializable, Cloneable {
 	 * Utiliza métodos set... para la posible verificación.
 	 * @param nombre
 	 * @param esquema
-	 * @throws ModeloException 
 	 */
-	public Patron(String nombre, byte[][] esquema) throws ModeloException {
+	public Patron(String nombre, byte[][] esquema) {
 		setNombre(nombre);
 		setEsquema(esquema);
 	}
@@ -36,29 +34,27 @@ public class Patron implements Serializable, Cloneable {
 	 * Constructor por defecto.
 	 * Establece el valor inicial, por defecto, de cada uno de los atributos.
 	 * Llama al constructor convencional de la propia clase.
-	 * @throws ModeloException 
 	 */
-	public Patron() throws ModeloException {
+	public Patron() {
 		this("NombrePatron", new byte[1][1]);
 	}
-
+	
 	/**
 	 * Constructor copia.
 	 * Establece el valor inicial de cada uno de los atributos a partir de
 	 * los valores obtenidos de un objeto de su misma clase.
 	 * El atributo esquema es clonado utilizando utilidades de clonación de arrays.
 	 * @param p
-	 * @throws ModeloException 
 	 */
-	public Patron(Patron p) throws ModeloException {
+	public Patron(Patron p) {
 		this(p.nombre, p.esquema);
 		this.esquema = new byte[p.esquema.length][p.esquema.length];	
 		for (int i=0; i <p.esquema.length; i++) {
 			this.esquema[i] = Arrays.copyOf(p.esquema[i], p.esquema[i].length);
 		}                                
 	}
-
-	/** Constructor especial.
+	
+	 /** Constructor especial.
 	 * Establece el valor inicial de cada uno de los atributos.
 	 * Recibe parámetros para inicializa los atributos.
 	 * Utiliza métodos set... para la posible verificación.
@@ -66,16 +62,15 @@ public class Patron implements Serializable, Cloneable {
 	 * @param filas
 	 * @param columnas
 	 * @param imagenPatron
-	 * @throws ModeloException 
 	 */
-	public Patron(String nombre, int filas, int columnas, String imagenPatron) throws ModeloException {
+	public Patron(String nombre, int filas, int columnas, String imagenPatron) {
 		setNombre(nombre);
-
+		
 		byte [][] esquema = new byte [filas][columnas];
 		//...
 		setEsquema(esquema);
 	}
-
+	
 	/**
 	 * @return the nombre
 	 */
@@ -92,38 +87,36 @@ public class Patron implements Serializable, Cloneable {
 
 	/**
 	 * @param nombre the nombre to set
-	 * @throws ModeloException 
 	 */
-	public void setNombre(String nombre) throws ModeloException {
-		
+	public void setNombre(String nombre) {
 		if (nombre != null) {
 			this.nombre = nombre;
-			return;
 		}
-		throw new ModeloException ( "El Nombre no puede estar vacio" );
-	
+		else {
+			this.nombre = "NombrePatron";
+		}
 	}
 
 	/**
 	 * @param esquema the esquema to set
-	 * @throws ModeloException 
 	 */
-	public void setEsquema(byte[][] esquema) throws ModeloException {
-
-			if (esquema != null || esquema.length != 0) {
-				this.esquema = esquema;
-				return;
-			}		
-			throw new ModeloException ( "El patrón no es válido" );
-
+	public void setEsquema(byte[][] esquema) {
+		
+		if (esquema == null || esquema.length == 0) {
+			byte[][] aux = {{0}};
+			this.esquema  = aux;
+		}		
+		else {
+			this.esquema = esquema;
+		}
 	}
-
+	
 	@Override
 	public String toString() {
 		return String.format("Patron [nombre=%s, esquema=%s]", nombre,
 				Arrays.toString(esquema));
 	}
-
+	
 	/**
 	 * hashCode() complementa al método equals y sirve para comparar objetos de forma 
 	 * rápida en estructuras Hash. 
@@ -145,7 +138,7 @@ public class Patron implements Serializable, Cloneable {
 	 * Son de la misma clase.
 	 * Tienen los mismos valores en los atributos; o son el mismo objeto.
 	 * @return falso si no cumple las condiciones.
-	 */
+	*/
 	@Override
 	public boolean equals(Object obj) {
 		if (obj != null && getClass() == obj.getClass()) {
@@ -160,20 +153,15 @@ public class Patron implements Serializable, Cloneable {
 		}
 		return false;
 	}
-
+	
 	/**
 	 * Genera un clon del propio objeto realizando una copia profunda.
 	 * @return el objeto clonado.
-	 */
+	*/
 	@Override
 	public Object clone() {
-		Object clon = null;
-		try {
-			clon = new Patron(this);
-		} catch (Exception e) {
-		
-		}
-		return clon;
+		// Utiliza el constructor copia.
+		return new Patron(this);
 	}
-
+	
 } // class

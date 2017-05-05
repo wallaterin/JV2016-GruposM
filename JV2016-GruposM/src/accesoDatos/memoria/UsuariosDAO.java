@@ -39,9 +39,8 @@ public class UsuariosDAO  implements OperacionesDAO {
 	/**
 	 * Constructor por defecto de uso interno.
 	 * Sólo se ejecutará una vez.
-	 * @throws ModeloException 
 	 */
-	private UsuariosDAO() throws ModeloException  {
+	private UsuariosDAO()  {
 		datosUsuarios = new ArrayList<Usuario>();
 		equivalenciasId = new Hashtable<String, String>();
 		cargarPredeterminados();
@@ -55,37 +54,36 @@ public class UsuariosDAO  implements OperacionesDAO {
 	 *  @return instancia
 	 */
 	public static UsuariosDAO getInstancia() {
-	
-			try {
-				instancia = new UsuariosDAO();
-			} catch (ModeloException e) {
-			
+		if (instancia == null) {
+			instancia = new UsuariosDAO();
 		}
 		return instancia;
 	}
 
 	/**
 	 *  Método para generar de datos predeterminados.
-	 * @throws ModeloException 
 	 */
-	private void cargarPredeterminados() throws ModeloException {
-		String nombreUsr = "Admin";
-		String password = "Miau#0";	
-		Usuario usrPredeterminado = new Usuario(new Nif("00000000T"), nombreUsr, "Admin Admin", 
-				new DireccionPostal("Iglesia", "0", "30012", "Murcia"), 
-				new Correo("jv.admin" + "@gmail.com"), new Fecha(), 
-				new Fecha(), new ClaveAcceso(password), RolUsuario.ADMINISTRADOR);
-		datosUsuarios.add(usrPredeterminado);
-		registrarEquivalenciaId(usrPredeterminado);
+	private void cargarPredeterminados() {
+		try {
+			String nombreUsr = Configuracion.get().getProperty("usuario.admin");
+			String password = Configuracion.get().getProperty("usuario.passwordPredeterminada");	
+			Usuario usrPredeterminado = new Usuario(new Nif("00000000T"), nombreUsr, "Admin Admin", 
+					new DireccionPostal("Iglesia", "0", "30012", "Murcia"), 
+					new Correo("jv.admin" + "@gmail.com"), new Fecha(), 
+					new Fecha(), new ClaveAcceso(password), RolUsuario.ADMINISTRADOR);
+			datosUsuarios.add(usrPredeterminado);
+			registrarEquivalenciaId(usrPredeterminado);
 
-		nombreUsr = "Invitado";
-		password = "Miau#0";	
-		usrPredeterminado = new Usuario(new Nif("00000001R"), nombreUsr, "Invitado Invitado", 
-				new DireccionPostal("Iglesia", "00", "30012", "Murcia"), 
-				new Correo("jv.invitado" + "@gmail.com"), new Fecha(), 
-				new Fecha(), new ClaveAcceso(password), RolUsuario.INVITADO);
-		datosUsuarios.add(usrPredeterminado);
-		registrarEquivalenciaId(usrPredeterminado);
+			nombreUsr = Configuracion.get().getProperty("usuario.invitado");
+			password = Configuracion.get().getProperty("usuario.passwordPredeterminada");	
+			usrPredeterminado = new Usuario(new Nif("00000001R"), nombreUsr, "Invitado Invitado", 
+					new DireccionPostal("Iglesia", "00", "30012", "Murcia"), 
+					new Correo("jv.invitado" + "@gmail.com"), new Fecha(), 
+					new Fecha(), new ClaveAcceso(password), RolUsuario.INVITADO);
+			datosUsuarios.add(usrPredeterminado);
+			registrarEquivalenciaId(usrPredeterminado);
+		} 
+		catch (ModeloException e) { }
 	}
 
 	/**

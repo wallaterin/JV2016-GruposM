@@ -111,7 +111,12 @@ public class SimulacionTest {
 
 	@Test
 	public void testSetFecha() {
-		simulacion1.setFecha(fecha);
+		try {
+			simulacion1.setFecha(fecha);
+		} 
+		catch (ModeloException e) {
+			e.printStackTrace();
+		}
 		assertEquals(simulacion1.getFecha(), fecha);
 	}
 
