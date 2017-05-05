@@ -1,11 +1,11 @@
 /** 
  * Proyecto: Juego de la vida.
- *  Resuelve todos los aspectos del almacenamiento del DTO Patron utilizando un ArrayList.
- *  Colabora en el patron Fachada.
- *  @since: prototipo2.0
- *  @source: SesionesDAO.java 
- *  @version: 2.0 - 2017/03/23 
- *  @author: ajp
+ * Resuelve todos los aspectos del almacenamiento del DTO Patron utilizando un ArrayList.
+ * Colabora en el patron Fachada.
+ * @since: prototipo2.0
+ * @source: SesionesDAO.java 
+ * @version: 2.1 - 2017/04/03 
+ * @author: ajp
  */
 
 package accesoDatos.memoria;
@@ -13,7 +13,9 @@ package accesoDatos.memoria;
 import java.util.ArrayList;
 import java.util.List;
 
+import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
+import modelo.ModeloException;
 import modelo.SesionUsuario;
 
 public class SesionesDAO implements OperacionesDAO {
@@ -116,7 +118,10 @@ public class SesionesDAO implements OperacionesDAO {
 	 */
 	public List<SesionUsuario> obtenerTodasMismoUsr(String idUsr)  {
 		SesionUsuario aux = null;
-		aux = new SesionUsuario();
+		try {
+			aux = new SesionUsuario();
+		} 
+		catch (ModeloException e) { }
 		aux.setUsr(UsuariosDAO.getInstancia().obtener(idUsr));
 		//Busca posición inserción ordenada por idUsr + fecha. La última para el mismo usuario.
 		return separarSesionesUsr(obtenerPosicion(aux.getIdSesion()) - 1);
@@ -142,9 +147,10 @@ public class SesionesDAO implements OperacionesDAO {
 	 * Alta de una nueva SesionUsuario en orden y sin repeticiones según IdUsr + fecha. 
 	 * Busca previamente la posición que le corresponde por búsqueda binaria.
 	 * @param obj - la SesionUsuario a almacenar.
+	 * @throws DatosException - si ya existe.
 	 */
 	@Override
-	public void alta(Object obj)  {
+	public void alta(Object obj) throws DatosException {
 		assert obj != null;
 		SesionUsuario sesionNueva = (SesionUsuario) obj;							// Para conversión cast
 		int posicionInsercion = obtenerPosicion(sesionNueva.getIdSesion()); 
@@ -152,29 +158,32 @@ public class SesionesDAO implements OperacionesDAO {
 			datosSesiones.add(-posicionInsercion - 1, sesionNueva); 				// Inserta la sesión en orden.
 			return;
 		}
+		throw new DatosException("(ALTA) La SesionUsuario: " + sesionNueva.getIdSesion() + " ya existe...");
 	}
 
 	/**
 	 * Elimina el objeto, dado el id utilizado para el almacenamiento.
 	 * @param idSesion - identificador de la SesionUsuario a eliminar.
-	 * @return - la SesionUsuario eliminada. null - si no existe.
+	 * @return - la SesionUsuario eliminada.
+	 * @throws DatosException - si no existe.
 	 */
 	@Override
-	public SesionUsuario baja(String idSesion)  {
+	public SesionUsuario baja(String idSesion) throws DatosException {
 		assert (idSesion != null);
 		int posicion = obtenerPosicion(idSesion); 									// En base 1
 		if (posicion > 0) {
 			return datosSesiones.remove(posicion - 1); 								// En base 0
 		}
-		return null;
+		throw new DatosException("(BAJA) La SesionUsuario: " + idSesion + " no existe...");
 	}
 	
 	/**
 	 *  Actualiza datos de una SesionUsuario reemplazando el almacenado por el recibido.
 	 *	@param obj - SesionUsuario con las modificaciones.
+	 *  @throws DatosException - si no existe.
 	 */
 	@Override
-	public void actualizar(Object obj) {
+	public void actualizar(Object obj) throws DatosException {
 		assert obj != null;
 		SesionUsuario sesionActualizada = (SesionUsuario) obj;						// Para conversión cast
 		int posicion = obtenerPosicion(sesionActualizada.getIdSesion()); 			// En base 1
@@ -183,6 +192,7 @@ public class SesionesDAO implements OperacionesDAO {
 			datosSesiones.set(posicion - 1, sesionActualizada);  					// En base 0		
 			return;
 		}
+		throw new DatosException("(ACTUALIZAR) La SesionUsuario: " + sesionActualizada.getIdSesion() + " no existe...");
 	}
 	
 	/**

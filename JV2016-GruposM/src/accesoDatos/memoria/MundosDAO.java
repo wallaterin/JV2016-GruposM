@@ -4,7 +4,7 @@
  * Colabora en el patron Fachada.
  * @since: prototipo2.0
  * @source: MundosDAO.java 
- * @version: 2.0 - 2017/03/23
+ * @version: 2.1 - 2017/04/03
  * @author: ajp
  */
 
@@ -13,6 +13,7 @@ package accesoDatos.memoria;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
 import modelo.Mundo;
 import modelo.Patron;
@@ -139,41 +140,43 @@ public class MundosDAO implements OperacionesDAO {
 	 *  Alta de un objeto en el almacén de datos, 
 	 *  sin repeticiones, según el campo id previsto. 
 	 *	@param obj - Objeto a almacenar.
-	 *  @ - si ya existe.
+	 *  @throws DatosException - si ya existe.
 	 */
 	@Override
-	public void alta(Object obj)  {
+	public void alta(Object obj) throws DatosException {
 		assert obj != null;
 		Mundo mundoNuevo = (Mundo) obj;										// Para conversión cast
 		int posicionInsercion = obtenerPosicion(mundoNuevo.getNombre()); 
 		if (posicionInsercion < 0) {
 			datosMundos.add(-posicionInsercion - 1, mundoNuevo); 			// Inserta la sesión en orden.
 			return;
-		}		
+		}
+		throw new DatosException("(ALTA) El Mundo: " + mundoNuevo.getNombre() + " ya existe...");		
 	}
 
 	/**
 	 * Elimina el objeto, dado el id utilizado para el almacenamiento.
 	 * @param nombre - el nombre del Mundo a eliminar.
-	 * @return - el Mundo eliminado. null si no existe.
+	 * @return - el Mundo eliminado.
+	 * @throws DatosException - si no existe.
 	 */
 	@Override
-	public Mundo baja(String nombre)  {
+	public Mundo baja(String nombre) throws DatosException {
 		assert (nombre != null);
 		int posicion = obtenerPosicion(nombre); 									// En base 1
 		if (posicion > 0) {
 			return datosMundos.remove(posicion - 1); 								// En base 0
 		}
-		return null;
+		throw new DatosException("(BAJA) El Mundo: " + nombre + " no existe...");
 	}
 
 	/**
 	 *  Actualiza datos de un Mundo reemplazando el almacenado por el recibido.
 	 *	@param obj - Mundo con las modificaciones.
-	 *  @ - si no existe.
+	 *  @throws DatosException - si no existe.
 	 */
 	@Override
-	public void actualizar(Object obj)  {
+	public void actualizar(Object obj) throws DatosException {
 		assert obj != null;
 		Mundo mundoActualizado = (Mundo) obj;										// Para conversión cast
 		int posicion = obtenerPosicion(mundoActualizado.getNombre()); 				// En base 1
@@ -182,6 +185,7 @@ public class MundosDAO implements OperacionesDAO {
 			datosMundos.set(posicion - 1, mundoActualizado);  						// En base 0		
 			return;
 		}
+		throw new DatosException("(ACTUALIZAR) El Patron: " + mundoActualizado.getNombre() + " no existe...");
 	}
 
 	/**
