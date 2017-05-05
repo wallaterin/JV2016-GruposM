@@ -1,10 +1,10 @@
-/** 
+ /** 
  * Proyecto: Juego de la vida.
  * Implementa el concepto de SesionUsuario según el modelo 2.
  * @since: prototipo1.0
  * @source: SesionUsuario.java 
- * @version: 2.0 - 2017.03.20
- * @author: ajp
+ * @version: 2.1 - 2017.05.03
+ * @author: ajp + Manuel7z
  */
 
 package modelo;
@@ -23,18 +23,19 @@ public class SesionUsuario implements Serializable, Cloneable {
 	/**
 	 * @param usr
 	 * @param fecha
+	 * @throws ModeloException 
 	 */
-	public SesionUsuario(Usuario usr, Fecha fecha, EstadoSesion estado) {
+	public SesionUsuario(Usuario usr, Fecha fecha, EstadoSesion estado) throws ModeloException {
 		setUsr(usr);
 		setFecha(fecha);
 		setEstado(estado);
 	}
 
-	public SesionUsuario() {
+	public SesionUsuario() throws ModeloException {
 		this(new Usuario(), new Fecha(), EstadoSesion.EN_PREPARACION);
 	}
 
-	public SesionUsuario(SesionUsuario su) {
+	public SesionUsuario(SesionUsuario su) throws ModeloException {
 		this(su.usr, new Fecha(su.fecha), su.estado);
 	}
 
@@ -65,9 +66,14 @@ public class SesionUsuario implements Serializable, Cloneable {
 		this.usr = usr;
 	}
 
-	public void setFecha(Fecha fecha) {
-		assert fechaSesionValida(fecha);
-		this.fecha = fecha;
+	public void setFecha(Fecha fecha) throws ModeloException{
+		if (fechaSesionValida(fecha)) {
+			this.fecha = fecha;
+			return;
+		}
+			throw new ModeloException("la fecha de sesion" + fecha + "no es valida");
+		
+
 	}
 
 	/**
@@ -76,11 +82,8 @@ public class SesionUsuario implements Serializable, Cloneable {
 	 * @return true si cumple.
 	 */
 	private boolean fechaSesionValida(Fecha fecha) {
-		if (fecha != null
-				&& fechaSesionCoherente(fecha)) {
-			return true;
-		}
-		return false;
+		assert fecha != null;
+		return fechaSesionCoherente(fecha);
 	}
 
 	/**
@@ -158,7 +161,12 @@ public class SesionUsuario implements Serializable, Cloneable {
 	@Override
 	public Object clone() {
 		// Utiliza el constructor copia.
-		return new SesionUsuario(this);
+				Object clon = null;
+				try {
+					clon = new SesionUsuario(this);
+				} 
+				catch (ModeloException e) {	}
+				return clon;
 	}
 
 
