@@ -1,10 +1,10 @@
 /** 
- * Proyecto: Juego de la vida.
+ * Proyecto: Juego de la vida
  * Clase JUnit de prueba automatizada de las características de la clase Usuario según el modelo 2.
  * @since: prototipo2
  * @source: TestUsuario.java 
- * @version: 2.0 - 2017.03.21
- * @author: ajp
+ * @version: 2.1 - 2017.05.03
+ * @author: Sandra Fernández Cánovas- grupo 2
  */
 
 package modelo.test;
@@ -18,6 +18,7 @@ import org.junit.Test;
 import modelo.ClaveAcceso;
 import modelo.Correo;
 import modelo.DireccionPostal;
+import modelo.ModeloException;
 import modelo.Nif;
 import modelo.Persona;
 import modelo.Usuario;
@@ -35,10 +36,15 @@ public class UsuarioTest {
 	@Before
 	public void crearDatosPrueba() {
 		// Objetos para la prueba.
-		usuario1 = new Usuario(); 
-		usuario2 = new Usuario(new Nif(), "Luis", "Pérez Ruiz",
-				new DireccionPostal("C/Luna", "27", "30132", "Murcia"), new Correo(), 
-				new Fecha(), new Fecha(2000, 03, 21), new ClaveAcceso(), RolUsuario.INVITADO);
+		try {
+			usuario1 = new Usuario();
+			usuario2 = new Usuario(new Nif(), "Luis", "Pérez Ruiz",
+					new DireccionPostal("C/Luna", "27", "30132", "Murcia"), new Correo(), 
+					new Fecha(), new Fecha(2000, 03, 21), new ClaveAcceso(), RolUsuario.INVITADO);
+		} catch (ModeloException e) {
+			
+		} 
+		
 	}
 
 	/**
@@ -70,7 +76,11 @@ public class UsuarioTest {
 	@Test
 	public void testSetClaveAcceso() {
 		ClaveAcceso clave = null;
-		clave = new ClaveAcceso("Hola#12");
+		try {
+			clave = new ClaveAcceso("Hola#12");
+		} catch (ModeloException e) {
+			
+		}
 		usuario1.setClaveAcceso(clave);
 
 		assertSame(usuario1.getClaveAcceso(), clave);
@@ -89,9 +99,13 @@ public class UsuarioTest {
 
 	@Test
 	public void testEqualsObject() {
-		usuario1 = new Usuario(new Nif(), "Luis", "Pérez Ruiz",
-				new DireccionPostal("C/Luna", "27", "30132", "Murcia"), new Correo(), 
-				new Fecha(), new Fecha(2000, 03, 21), new ClaveAcceso(), RolUsuario.INVITADO);
+		try {
+			usuario1 = new Usuario(new Nif(), "Luis", "Pérez Ruiz",
+					new DireccionPostal("C/Luna", "27", "30132", "Murcia"), new Correo(), 
+					new Fecha(), new Fecha(2000, 03, 21), new ClaveAcceso(), RolUsuario.INVITADO);
+		} catch (ModeloException e) {
+			
+		}
 		assertTrue(usuario1.equals(usuario2));
 	}
 
@@ -104,7 +118,11 @@ public class UsuarioTest {
 	@Test
 	public void testSetClaveAccesoNull() {
 		try {
-			usuario1.setNif(null);
+			try {
+				usuario1.setNif(null);
+			} catch (ModeloException e) {
+				
+			}
 			fail("No debe llegar aquí...");
 		} catch (AssertionError e) { }
 

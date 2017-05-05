@@ -1,3 +1,4 @@
+
 /** 
  * Proyecto: Juego de la vida.
  * Implementa el concepto de Persona un sistema según el modelo 2. 
@@ -48,7 +49,7 @@ public  abstract class Persona implements Serializable, Cloneable {
 		return nif;
 	}
 
-	public void setNif(Nif nif) {
+	public void setNif(Nif nif) throws ModeloException {
 		assert nif != null;
 		this.nif = nif;
 	}
@@ -62,7 +63,7 @@ public  abstract class Persona implements Serializable, Cloneable {
 			this.nombre = nombre;
 			return;
 		}
-		throw new ModeloException("El formato del nombre: " + nombre + " no es válido...");
+		throw new ModeloException ("El formato del nombre: " + nombre + " no es valido...");
 	}
 
 	private boolean nombreValido(String nombre) {
@@ -79,7 +80,7 @@ public  abstract class Persona implements Serializable, Cloneable {
 			this.apellidos = apellidos;
 			return;
 		}
-		throw new ModeloException("El formato de los apellidos: " + apellidos + " no es válido...");	
+		throw new ModeloException ("El formato de los apellidos: " + apellidos + " no son valido...");
 	}
 
 	private boolean apellidoValido(String apellidos) {
@@ -105,7 +106,7 @@ public  abstract class Persona implements Serializable, Cloneable {
 			this.fechaNacimiento = fechaNacimiento;
 			return;
 		}
-		throw new ModeloException("La fecha de nacimiento: " + fechaNacimiento + " no es válida...");
+		throw new ModeloException ("El formato de la fecha de nacimiento: " + fechaNacimiento + " no es valida...");
 	}
 
 	/**
@@ -124,9 +125,11 @@ public  abstract class Persona implements Serializable, Cloneable {
 	 * @return true si cumple.
 	 */
 	private boolean fechaNacimientoCoherente(Fecha fechaNacimiento) {
-		// Comprueba que fechaNacimiento no es, por ejemplo, del futuro
-		// --Pendiente--
-		return true;
+		Fecha fechaActual = util.Fecha.Fecha();
+		if (fechaNacimiento.compareTo(fechaActual.addAños(-18))) {
+			return true;
+		}
+		else return false;
 	}
 
 	public Correo getCorreo() {
