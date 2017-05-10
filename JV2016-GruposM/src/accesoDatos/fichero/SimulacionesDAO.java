@@ -7,6 +7,7 @@
  * @source: SimulacionesDAO.java 
  * @version: 2.1 - 2017.04.09 
  * @author: ajp
+ * @author:Salva Mármol -Grupo1
  */
 
 package accesoDatos.fichero;
@@ -306,7 +307,7 @@ public class SimulacionesDAO implements OperacionesDAO, Persistente {
 	 */
 	@Override
 	public void borrarTodo() {
-		instancia = null;
+		datosSimulaciones = new ArrayList<Simulacion>();
 	}
 
 } //class
