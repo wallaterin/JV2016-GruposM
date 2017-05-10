@@ -70,8 +70,9 @@ public class DatosPrueba {
 
 				fachada.altaUsuario(usr);
 			} 
-			catch (ModeloException e) { }
-			catch (DatosException e) { }
+			catch (DatosException | ModeloException e) { 
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -81,13 +82,17 @@ public class DatosPrueba {
 	private static void cargarSesionesPrueba() {
 		Usuario usrPrueba1 = fachada.obtenerUsuario("AAA0T");
 		Usuario usrPrueba2 = fachada.obtenerUsuario("III1R");
-		SesionUsuario sesionPrueba1 = new SesionUsuario(usrPrueba1, new Fecha(), EstadoSesion.CERRADA);
-		SesionUsuario sesionPrueba2 = new SesionUsuario(usrPrueba2, new Fecha(), EstadoSesion.CERRADA);
+		SesionUsuario sesionPrueba1 = null;
+		SesionUsuario sesionPrueba2 = null;
 		try {
+			sesionPrueba1 = new SesionUsuario(usrPrueba1, new Fecha(), EstadoSesion.CERRADA);
+			sesionPrueba2 = new SesionUsuario(usrPrueba2, new Fecha(), EstadoSesion.CERRADA);
 			fachada.altaSesion(sesionPrueba1);
 			fachada.altaSesion(sesionPrueba2);
 		} 
-		catch (DatosException e) { }
+		catch (DatosException | ModeloException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -97,13 +102,13 @@ public class DatosPrueba {
 	private static void cargarSimulacionesPrueba() {
 		Usuario usrPrueba = fachada.obtenerUsuario("III1R");
 		Mundo mundoPrueba = fachada.obtenerMundo("MundoDemo");
-		Simulacion simulacionPrueba1 = new Simulacion(usrPrueba, new Fecha(), mundoPrueba, EstadoSimulacion.PREPARADA);
-		Simulacion simulacionPrueba2 = new Simulacion(usrPrueba, new Fecha(), mundoPrueba, EstadoSimulacion.PREPARADA);
 		try {
+			Simulacion simulacionPrueba1 = new Simulacion(usrPrueba, new Fecha(), mundoPrueba, EstadoSimulacion.PREPARADA);
+			Simulacion simulacionPrueba2 = new Simulacion(usrPrueba, new Fecha(), mundoPrueba, EstadoSimulacion.PREPARADA);
 			fachada.altaSimulacion(simulacionPrueba1);
 			fachada.altaSimulacion(simulacionPrueba2);
 		} 
-		catch (DatosException e) { }
+		catch (DatosException | ModeloException e) { }
 	}
 
 	/**
@@ -136,7 +141,9 @@ public class DatosPrueba {
 			Mundo mundoPrueba = new Mundo("MundoPrueba", new ArrayList<Integer>(), new Hashtable<Patron,Posicion>(), espacioPrueba);
 			fachada.altaMundo(mundoPrueba);
 		} 
-		catch (DatosException e) { }
+		catch (DatosException | ModeloException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -151,11 +158,14 @@ public class DatosPrueba {
 			{ 1, 1, 1, 1 }, 
 			{ 1, 1, 0, 0 }
 		};
-		Patron patronPrueba = new Patron("PatronPrueba", esquemaPrueba);
+		
 		try {
+			Patron patronPrueba = new Patron("PatronPrueba", esquemaPrueba);
 			fachada.altaPatron(patronPrueba);
 		} 
-		catch (DatosException e) { }
+		catch (DatosException | ModeloException e) {
+			e.printStackTrace();
+		}
 	}
 
 } //class

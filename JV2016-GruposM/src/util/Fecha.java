@@ -9,12 +9,13 @@
 
 package util;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class Fecha {
-
+public class Fecha implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private Calendar calendario;
 
 	public Fecha(int año, int mes, int dia) {

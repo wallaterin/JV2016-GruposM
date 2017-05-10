@@ -1,9 +1,9 @@
 /** 
  * Proyecto: Juego de la vida.
- * Implementa el concepto de SesionUsuario según el modelo 2.
+ * Implementa el concepto de SesionUsuario según el modelo 2
  * @since: prototipo1.0
  * @source: SesionUsuario.java 
- * @version: 2.0 - 2017.03.20
+ * @version: 2.1 - 2017.04.20
  * @author: ajp
  */
 
@@ -13,37 +13,38 @@ import java.io.Serializable;
 
 import util.Fecha;
 
-public class SesionUsuario implements Serializable, Cloneable {
+public class SesionUsuario implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Usuario usr;  
 	private Fecha fecha; 
 	public enum EstadoSesion { EN_PREPARACION, ACTIVA, CERRADA }
 	private EstadoSesion estado;
-
+	
 	/**
 	 * @param usr
 	 * @param fecha
+	 * @throws ModeloException 
 	 */
-	public SesionUsuario(Usuario usr, Fecha fecha, EstadoSesion estado) {
+	public SesionUsuario(Usuario usr, Fecha fecha, EstadoSesion estado) throws ModeloException {
 		setUsr(usr);
 		setFecha(fecha);
 		setEstado(estado);
 	}
-
-	public SesionUsuario() {
+	
+	public SesionUsuario() throws ModeloException {
 		this(new Usuario(), new Fecha(), EstadoSesion.EN_PREPARACION);
 	}
 
-	public SesionUsuario(SesionUsuario su) {
+	public SesionUsuario(SesionUsuario su) throws ModeloException {
 		this(su.usr, new Fecha(su.fecha), su.estado);
 	}
-
+	
 	// Métodos de acceso
-
+	
 	public Usuario getUsr() {
 		return usr;
 	}
-
+	
 	public Fecha getFecha() {
 		return fecha;
 	}
@@ -59,48 +60,49 @@ public class SesionUsuario implements Serializable, Cloneable {
 		return	usr.getIdUsr() + "-" + fecha.getAño() + fecha.getMes() + fecha.getDia() 
 		+ fecha.getHora() + fecha.getMinuto() + fecha.getSegundo();
 	}
-
+	
 	public void setUsr(Usuario usr) {
 		assert usr != null;
 		this.usr = usr;
 	}
-
-	public void setFecha(Fecha fecha) {
-		assert fechaSesionValida(fecha);
-		this.fecha = fecha;
-	}
-
-	/**
-	 * Comprueba validez de una fecha.
-	 * @param fecha.
-	 * @return true si cumple.
-	 */
-	private boolean fechaSesionValida(Fecha fecha) {
-		if (fecha != null
-				&& fechaSesionCoherente(fecha)) {
-			return true;
+	
+	public void setFecha(Fecha fecha) throws ModeloException {
+		if (fechaValida(fecha)) {
+			this.fecha = fecha;
+			return;
 		}
-		return false;
+		throw new ModeloException("La fecha: " + fecha + " no es válida...");
 	}
 
 	/**
-	 * Comprueba coherencia de una fecha de sesión.
+	 * Comprueba validez de una fecha de sesión.
 	 * @param fecha.
 	 * @return true si cumple.
 	 */
-	private boolean fechaSesionCoherente(Fecha fecha) {
-		// Comprueba que fechaSesion no es, por ejemplo, del futuro
+	private boolean fechaValida(Fecha fecha) {
+		assert fecha != null;
+		return fechaCoherente(fecha);
+	}
+	
+	/**
+	 * Comprueba coherencia de una fecha.
+	 * @param fecha.
+	 * @return true si cumple.
+	 */
+	private boolean fechaCoherente(Fecha fecha) {
+		// Comprueba que fecha no es, por ejemplo, del futuro
 		// --Pendiente--
 		return true;
 	}
-
+	
 	/**
 	 * @param estado the estado to set
 	 */
 	public void setEstado(EstadoSesion estado) {
+		assert estado != null;
 		this.estado = estado;
 	}
-
+	
 	/**
 	 * Redefine el método heredado de la clase Objecto.
 	 * @return el texto formateado del estado (valores de atributos) 
@@ -134,7 +136,7 @@ public class SesionUsuario implements Serializable, Cloneable {
 	 * Son de la misma clase.
 	 * Tienen los mismos valores en los atributos; o son el mismo objeto.
 	 * @return falso si no cumple las condiciones.
-	 */
+	*/
 	@Override
 	public boolean equals(Object obj) {
 		if (obj != null && getClass() == obj.getClass()) {
@@ -150,16 +152,19 @@ public class SesionUsuario implements Serializable, Cloneable {
 		}
 		return false;
 	}
-
+		
 	/**
 	 * Genera un clon del propio objeto realizando una copia profunda.
 	 * @return el objeto clonado.
-	 */
+	*/
 	@Override
 	public Object clone() {
 		// Utiliza el constructor copia.
-		return new SesionUsuario(this);
+		Object clon = null;
+		try {
+			clon = new SesionUsuario(this);
+		} catch (ModeloException e) { }
+		return clon;
 	}
-
 
 } // class

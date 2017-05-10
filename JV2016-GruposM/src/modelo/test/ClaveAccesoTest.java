@@ -1,10 +1,10 @@
 /** 
  * Proyecto: Juego de la vida.
- * Prueba Junit4 de la clase Claveacceso según el modelo 2.
+ * Prueba Junit4 de la clase Claveacceso según el modelo 2
  * @since: prototipo2
  * @source: ClaveAccesoTest.java 
- * @version: 2 - 2017.03.22
- * @author: ajp
+ * @version: 2.1 - 2017.04.27
+ * @author: RML
  */
 
 package modelo.test;
@@ -12,7 +12,6 @@ package modelo.test;
 import static org.junit.Assert.*;
 import modelo.ClaveAcceso;
 import modelo.ModeloException;
-import util.UtilException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -21,27 +20,27 @@ import org.junit.Test;
 public class ClaveAccesoTest {
 	private ClaveAcceso clave1;
 	private ClaveAcceso clave2 ;
-	
+
 	public ClaveAccesoTest () {
 		try {
 			clave2 = new ClaveAcceso("Miau#0");
 		} 
-		catch (ModeloException e) {	}
+		catch (ModeloException e) { }
 	}
-	
+
 	@Before
 	public void InicializaDatosPrueba() {	
 		try {
 			clave1 = new ClaveAcceso();
 		} 
-		catch (ModeloException e) {	}
+		catch (ModeloException e) { }
 	}
-	
+
 	@After
 	public void borrarDatosPrueba() {	
 		clave1 = null;
 	}
-	
+
 	// Test con DATOS VALIDOS
 	@Test
 	public void testClaveAccesoConvencional() {	
@@ -58,7 +57,7 @@ public class ClaveAccesoTest {
 		try {
 			clave1 = new ClaveAcceso(clave2);
 		} 
-		catch (ModeloException e) {	}
+		catch (ModeloException e) { }
 		assertNotSame(clave2, clave1);
 	}
 
@@ -71,8 +70,7 @@ public class ClaveAccesoTest {
 	public void testSetTexto() {
 		try {
 			clave1.setTexto("Miau#0");
-		} 
-		catch (ModeloException e) {	}
+		} catch (ModeloException e) { }
 		assertEquals(clave1.getTexto(), "Pmezd8");
 	}
 
@@ -86,8 +84,7 @@ public class ClaveAccesoTest {
 		ClaveAcceso clave = null;
 		try {
 			clave = new ClaveAcceso();
-		} 
-		catch (ModeloException e) { }
+		} catch (ModeloException e) { }
 		assertEquals(clave, clave1);
 	}
 
@@ -111,11 +108,10 @@ public class ClaveAccesoTest {
 			clave = new ClaveAcceso(texto);
 			fail("No debe llegar aquí...");
 		} 
-		catch (ModeloException e) { }
-		catch (AssertionError e) { }
+		catch (AssertionError | ModeloException e) { }
 		assertNull(clave);
 	}
-	
+
 	@Test
 	public void testClaveAccesoConvencionalTextoMalFormato() {	
 		ClaveAcceso clave = null;
@@ -123,31 +119,28 @@ public class ClaveAccesoTest {
 			clave = new ClaveAcceso("hola");
 			fail("No debe llegar aquí...");
 		} 
-		catch (ModeloException e) { }
-		catch (AssertionError e) { }
+		catch (AssertionError | ModeloException e) { }
 		assertNull(clave);
 	}
-	
+
 	@Test
 	public void testSetTextoNull() {
 		try {
 			clave1.setTexto(null);
 			fail("No debe llegar aquí...");
 		} 
-		catch (ModeloException e) { }
-		catch (AssertionError e) { }
+		catch (AssertionError | ModeloException e) { }
 		assertEquals(clave1.getTexto(), "Pmezd8");
 	}
-	
+
 	@Test
 	public void testSetTextoMalFormato() {
 		try {
 			clave1.setTexto("hola");
 			fail("No debe llegar aquí...");
 		} 
-		catch (ModeloException e) { }
-		catch (AssertionError e) { }
+		catch (AssertionError | ModeloException e) { }
 		assertEquals(clave1.getTexto(), "Pmezd8");
 	}
-	
+
 } //class

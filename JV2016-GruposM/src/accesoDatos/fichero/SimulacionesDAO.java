@@ -1,20 +1,38 @@
 /** 
  * Proyecto: Juego de la vida.
- *  Resuelve todos los aspectos del almacenamiento del DTO Simulacion utilizando un ArrayList.
- *  Colabora en el patron Fachada.
- *  @since: prototipo2.0
- *  @source: SimulacionesDAO.java 
- *  @version: 2.1 - 2017/04/03 
- *  @author: ajp
+ * Resuelve todos los aspectos del almacenamiento del DTO Simulacion 
+ * utilizando un ArrayList persistente en un fichero.
+ * Colabora en el patron Fachada.
+ * @since: prototipo2.0
+ * @source: SimulacionesDAO.java 
+ * @version: 2.1 - 2017.04.09 
+ * @author: ajp
  */
 
-package accesoDatos.memoria;
+package accesoDatos.fichero;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+/** 
+ * Proyecto: Juego de la vida.
+ *  Resuelve todos los aspectos del almacenamiento del
+ *  DTO Simulacion utilizando un ArrayList persistente en fichero.
+ *  Colabora en el patron Fachada.
+ *  @since: prototipo2
+ *  @source: SimulacionesDAO.java 
+ *  @version: 1.0 - 2016/05/23 
+ *  @author: ajp
+ */
 import java.util.ArrayList;
 import java.util.List;
 
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
+import config.Configuracion;
 import modelo.ModeloException;
 import modelo.Mundo;
 import modelo.Simulacion;
@@ -22,13 +40,14 @@ import modelo.Simulacion.EstadoSimulacion;
 import modelo.Usuario;
 import util.Fecha;
 
-public class SimulacionesDAO implements OperacionesDAO {
+public class SimulacionesDAO implements OperacionesDAO, Persistente {
 
-	// Requerido por el Singleton 
+	// Requerido por el Singleton. 
 	private static SimulacionesDAO instancia;
 
 	// Elemento de almacenamiento.
 	private static ArrayList<Simulacion> datosSimulaciones;
+	private static File fSimulaciones;
 
 	/**
 	 * Constructor por defecto de uso interno.
@@ -36,7 +55,14 @@ public class SimulacionesDAO implements OperacionesDAO {
 	 */
 	private SimulacionesDAO() {
 		datosSimulaciones = new ArrayList<Simulacion>();
-		cargarPredeterminados();
+		fSimulaciones = new File(Configuracion.get().getProperty("simulaciones.nombreFichero"));
+		try {
+			recuperarDatos();
+		} catch (DatosException e) {
+			if (e.getMessage().equals("El fichero de datos: " + fSimulaciones.getName() + " no existe...")) {	
+				cargarPredeterminados();
+			}
+		}
 	}
 
 	/**
@@ -68,6 +94,28 @@ public class SimulacionesDAO implements OperacionesDAO {
 			e.printStackTrace();
 		}
 		datosSimulaciones.add(simulacionDemo);
+		guardarDatos(datosSimulaciones);
+	}
+
+	//OPERACIONES DE PERSISTENCIA.
+	/**
+	 *  Recupera el Arraylist datosSimulaciones almacenados en fichero. 
+	 * @throws DatosException 
+	 */
+	@Override
+	public void recuperarDatos() throws DatosException {
+		try {
+			if (fSimulaciones.exists()) {
+				FileInputStream fisSimulaciones = new FileInputStream(fSimulaciones);
+				ObjectInputStream oisSimulaciones = new ObjectInputStream(fisSimulaciones);
+				datosSimulaciones = (ArrayList<Simulacion>) oisSimulaciones.readObject();
+				oisSimulaciones.close();
+				return;
+			}
+			throw new DatosException("El fichero de datos: " + fSimulaciones.getName() + " no existe...");
+		} 
+		catch (ClassNotFoundException e) {}
+		catch (IOException e) {}
 	}
 
 	/**
@@ -75,7 +123,29 @@ public class SimulacionesDAO implements OperacionesDAO {
 	 */
 	@Override
 	public void cerrar() {
-		// Nada que hacer si no hay persistencia.
+		guardarDatos();
+	}
+
+	/**
+	 *  Guarda el Arraylist de simulaciones de usuarios en fichero.
+	 */
+	@Override
+	public void guardarDatos() {
+		guardarDatos(datosSimulaciones);
+	}
+
+	/**
+	 *  Guarda la lista recibida en el fichero de datos.
+	 */
+	private void guardarDatos(List<Simulacion> listaSimulaciones) {
+		try {
+			FileOutputStream fosSimulaciones = new FileOutputStream(fSimulaciones);
+			ObjectOutputStream oosSesiones = new ObjectOutputStream(fosSimulaciones);
+			oosSesiones.writeObject(datosSimulaciones);		
+			oosSesiones.flush();
+			oosSesiones.close();
+		} 
+		catch (IOException e) {}	
 	}
 
 	// OPERACIONES DAO

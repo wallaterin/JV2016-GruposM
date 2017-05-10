@@ -3,8 +3,8 @@
  * Clase JUnit de prueba automatizada de las características de la clase Nif según el modelo 2.
  * @since: prototipo2
  * @source: TestNif.java 
- * @version: 2.0 - 2017.03.20
- * @author: ajp
+ * @version: 2.1 - 2017.05.04
+ * @author: Tomás Buendía Alacid
  */
 
 package modelo.test;
@@ -15,6 +15,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import modelo.ModeloException;
 import modelo.Nif;
 
 public class NifTest {
@@ -27,8 +28,11 @@ public class NifTest {
 	@Before
 	public void crearDatosPrueba() {
 		// Objetos para la prueba.
-		nif1 = new Nif(); 
-		nif2 = new Nif("00000001R");
+		try {
+			nif1 = new Nif();
+			nif2 = new Nif("00000001R");
+		} catch (ModeloException e) { } 
+		
 	}
 
 	/**
@@ -54,7 +58,10 @@ public class NifTest {
 
 	@Test
 	public void testNifCopia() {
-		nif1 = new Nif(nif2);
+		try {
+			nif1 = new Nif(nif2);
+		} catch (ModeloException e) {	}
+		
 		assertNotSame(nif1, nif2);
 	}
 
@@ -65,7 +72,9 @@ public class NifTest {
 
 	@Test
 	public void testSetTexto() {
-		nif1.setTexto("00000001R");
+		try {
+			nif1.setTexto("00000001R");
+		} catch (ModeloException e) {	}
 		assertEquals(nif1.getTexto(), "00000001R");
 	}
 
@@ -76,7 +85,9 @@ public class NifTest {
 
 	@Test
 	public void testEqualsObject() {
-		nif1 = new Nif("00000001R");
+		try {
+			nif1 = new Nif("00000001R");
+		} catch (ModeloException e) {	}
 		assertTrue(nif1.equals(nif2));
 	}
 
@@ -96,7 +107,9 @@ public class NifTest {
 	public void testNifConvencionalNull() {
 		try {
 			String texto = null;
-			nif1 = new Nif(texto);
+			try {
+				nif1 = new Nif(texto);
+			} catch (ModeloException e) {	}
 			fail("No debe llegar aquí...");
 		} catch (AssertionError e) { }
 
@@ -107,7 +120,9 @@ public class NifTest {
 	@Test
 	public void testNifConvencionalFormato() {
 		try {
-			nif1 = new Nif("00000000-T");
+			try {
+				nif1 = new Nif("00000000-T");
+			} catch (ModeloException e) {	}
 			fail("No debe llegar aquí...");
 		} catch (AssertionError e) { }
 
@@ -118,7 +133,9 @@ public class NifTest {
 	@Test
 	public void testNifConvencionalLetra() {
 		try {
-			nif1 = new Nif("00000000F");
+			try {
+				nif1 = new Nif("00000000F");
+			} catch (ModeloException e) {	}
 			fail("No debe llegar aquí...");
 		} catch (AssertionError e) { }
 
@@ -129,7 +146,9 @@ public class NifTest {
 	@Test
 	public void testSetTextoNull() {
 		try {
-			nif1.setTexto(null);
+			try {
+				nif1.setTexto(null);
+			} catch (ModeloException e) {	}
 			fail("No debe llegar aquí...");
 		} catch (AssertionError e) { }
 
@@ -140,7 +159,9 @@ public class NifTest {
 	@Test
 	public void testSetTextoMalFormato() {
 		try {
-			nif1.setTexto("00000000-T");
+			try {
+				nif1.setTexto("00000000-T");
+			} catch (ModeloException e) {	}
 			fail("No debe llegar aquí...");
 		} catch (AssertionError e) { }
 
@@ -151,7 +172,9 @@ public class NifTest {
 	@Test
 	public void testSetTextoLetraIncorrecta() {
 		try {
-			nif1.setTexto("00000000F");
+			try {
+				nif1.setTexto("00000000F");
+			} catch (ModeloException e) {	}
 			fail("No debe llegar aquí...");
 		} catch (AssertionError e) { }
 
