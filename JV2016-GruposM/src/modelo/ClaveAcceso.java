@@ -13,7 +13,6 @@ package modelo;
 import java.io.Serializable;
 import util.Criptografia;
 import util.Formato;
-import util.UtilException;
 
 public class ClaveAcceso implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;

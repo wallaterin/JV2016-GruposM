@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
+import modelo.ModeloException;
 import modelo.Patron;
 
 public class PatronesDAO implements OperacionesDAO {
@@ -58,7 +59,13 @@ public class PatronesDAO implements OperacionesDAO {
 			{ 0, 1, 1, 1 }, 
 			{ 0, 0, 0, 0 }
 		};
-		Patron patronDemo = new Patron("PatronDemo", esquemaDemo);
+		Patron patronDemo = null;
+		try {
+			patronDemo = new Patron("PatronDemo", esquemaDemo);
+		} 
+		catch (ModeloException e) {
+			e.printStackTrace();
+		}
 		datosPatrones.add(patronDemo);
 	}
 	

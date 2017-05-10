@@ -61,8 +61,17 @@ public class DatosTest {
 					new Correo("pepe@gmail.com"), new Fecha(1990, 11, 12), 
 					new Fecha(2014, 12, 3), new ClaveAcceso("Miau#32"), RolUsuario.NORMAL);
 		} 
-		catch (ModeloException e) { }
-		sesionPrueba = new SesionUsuario(fachada.obtenerUsuario("III1R"), new Fecha(), EstadoSesion.EN_PREPARACION);
+		catch (ModeloException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			sesionPrueba = new SesionUsuario(fachada.obtenerUsuario("III1R"), new Fecha(), EstadoSesion.EN_PREPARACION);
+		} 
+		catch (ModeloException e) {
+			e.printStackTrace();
+		}
+		
 		mundoPrueba = fachada.obtenerMundo("MundoDemo");
 		try {
 			simulacionPrueba = new Simulacion(fachada.obtenerUsuario("III1R"), new Fecha(), new Mundo(), EstadoSimulacion.PREPARADA);
@@ -272,8 +281,9 @@ public class DatosTest {
 	@Test
 	public void testActualizarMundo() {
 		Map<Patron, Posicion> distribucionPrueba = new Hashtable<Patron, Posicion>();
-		Mundo mundoNuevo = new Mundo(mundoPrueba);
+		Mundo mundoNuevo = null;
 		try {
+			mundoNuevo = new Mundo(mundoPrueba);
 			distribucionPrueba.put(new Patron(), new Posicion(3,5));
 			fachada.altaMundo(mundoPrueba);
 			mundoNuevo.setDistribucion(distribucionPrueba);
@@ -316,7 +326,7 @@ public class DatosTest {
 			patronPrueba.setEsquema(esquemaPrueba);
 			fachada.actualizarMundo(mundoPrueba);
 		} 
-		catch (DatosException e) { }
+		catch (DatosException | ModeloException e) { }
 		assertSame(fachada.obtenerPatron(patronPrueba).getEsquema(), esquemaPrueba);
 	}
 

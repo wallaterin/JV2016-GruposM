@@ -41,6 +41,11 @@ public class Nif implements Serializable, Cloneable {
 		throw new ModeloException("El NIF: " + texto + " no es válido...");	
 	}
 
+	/**
+	 * Comprueba la validez del formato.
+	 * @param texto del NIF
+	 * @return true si la letra es correcta.
+	 */
 	private boolean nifValido(String texto) {
 		assert texto != null;
 		return	texto.matches(Formato.PATRON_NIF) && letraNIFValida(texto);

@@ -24,6 +24,7 @@ import java.util.List;
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
 import config.Configuracion;
+import modelo.ModeloException;
 import modelo.Mundo;
 import modelo.Patron;
 import modelo.Posicion;
@@ -86,7 +87,13 @@ public class MundosDAO implements OperacionesDAO, Persistente {
 			{ 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Flip-Flop
 			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }  // 1x Still Life
 		};
-		Mundo mundoDemo = new Mundo("MundoDemo", new ArrayList<Integer>(), new Hashtable<Patron,Posicion>(), espacioDemo);
+		Mundo mundoDemo = null;
+		try {
+			mundoDemo = new Mundo("MundoDemo", new ArrayList<Integer>(), new Hashtable<Patron,Posicion>(), espacioDemo);
+		} 
+		catch (ModeloException e) {
+			e.printStackTrace();
+		}
 		datosMundos.add(mundoDemo);
 		guardarDatos(datosMundos);
 	}

@@ -23,8 +23,9 @@ public class SesionUsuario implements Serializable {
 	/**
 	 * @param usr
 	 * @param fecha
+	 * @throws ModeloException 
 	 */
-	public SesionUsuario(Usuario usr, Fecha fecha, EstadoSesion estado) {
+	public SesionUsuario(Usuario usr, Fecha fecha, EstadoSesion estado) throws ModeloException {
 		setUsr(usr);
 		setFecha(fecha);
 		setEstado(estado);
@@ -34,7 +35,7 @@ public class SesionUsuario implements Serializable {
 		this(new Usuario(), new Fecha(), EstadoSesion.EN_PREPARACION);
 	}
 
-	public SesionUsuario(SesionUsuario su) {
+	public SesionUsuario(SesionUsuario su) throws ModeloException {
 		this(su.usr, new Fecha(su.fecha), su.estado);
 	}
 	
@@ -65,31 +66,31 @@ public class SesionUsuario implements Serializable {
 		this.usr = usr;
 	}
 	
-	public void setFecha(Fecha fecha) {
-		assert fechaSesionValida(fecha);
-		this.fecha = fecha;
-	}
-	
-	/**
-	 * Comprueba validez de una fecha.
-	 * @param fecha.
-	 * @return true si cumple.
-	 */
-	private boolean fechaSesionValida(Fecha fecha) {
-		if (fecha != null
-				&& fechaSesionCoherente(fecha)) {
-			return true;
+	public void setFecha(Fecha fecha) throws ModeloException {
+		if (fechaValida(fecha)) {
+			this.fecha = fecha;
+			return;
 		}
-		return false;
+		throw new ModeloException("La fecha: " + fecha + " no es válida...");
 	}
-	
+
 	/**
-	 * Comprueba coherencia de una fecha de sesión.
+	 * Comprueba validez de una fecha de sesión.
 	 * @param fecha.
 	 * @return true si cumple.
 	 */
-	private boolean fechaSesionCoherente(Fecha fecha) {
-		// Comprueba que fechaSesion no es, por ejemplo, del futuro
+	private boolean fechaValida(Fecha fecha) {
+		assert fecha != null;
+		return fechaCoherente(fecha);
+	}
+	
+	/**
+	 * Comprueba coherencia de una fecha.
+	 * @param fecha.
+	 * @return true si cumple.
+	 */
+	private boolean fechaCoherente(Fecha fecha) {
+		// Comprueba que fecha no es, por ejemplo, del futuro
 		// --Pendiente--
 		return true;
 	}
@@ -98,6 +99,7 @@ public class SesionUsuario implements Serializable {
 	 * @param estado the estado to set
 	 */
 	public void setEstado(EstadoSesion estado) {
+		assert estado != null;
 		this.estado = estado;
 	}
 	
@@ -158,7 +160,11 @@ public class SesionUsuario implements Serializable {
 	@Override
 	public Object clone() {
 		// Utiliza el constructor copia.
-		return new SesionUsuario(this);
+		Object clon = null;
+		try {
+			clon = new SesionUsuario(this);
+		} catch (ModeloException e) { }
+		return clon;
 	}
 
 } // class

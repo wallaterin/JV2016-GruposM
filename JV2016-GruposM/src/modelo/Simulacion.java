@@ -90,10 +90,12 @@ public class Simulacion implements Serializable, Cloneable {
 	}
 
 	public void setUsr(Usuario usr) {
+		assert usr != null;
 		this.usr = usr;
 	}
 
 	public void setMundo(Mundo mundo) {
+		assert mundo != null;
 		this.mundo = mundo;
 	}
 

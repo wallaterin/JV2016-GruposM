@@ -3,7 +3,7 @@
  *  Organiza aspectos de gestión de la simulación según el modelo 2.
  *  @since: prototipo2.0
  *  @source: Patron.java 
- *  @version: 2.0 - 2017.03.20
+ *  @version: 2.1 - 2017.05.05
  *  @author: ajp
  */
 
@@ -11,6 +11,8 @@ package modelo;
 
 import java.io.Serializable;
 import java.util.Arrays;
+
+import util.Formato;
 
 public class Patron implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
@@ -24,18 +26,26 @@ public class Patron implements Serializable, Cloneable {
 	 * Utiliza métodos set... para la posible verificación.
 	 * @param nombre
 	 * @param esquema
+	 * @throws ModeloException 
 	 */
-	public Patron(String nombre, byte[][] esquema) {
+	public Patron(String nombre, byte[][] esquema) throws ModeloException {
 		setNombre(nombre);
-		setEsquema(esquema);
+		try {
+			setEsquema(esquema);
+		} 
+		catch (ModeloException e) {
+				byte[][] aux = {{0}};
+				this.esquema  = aux;
+		}
 	}
 
 	/**
 	 * Constructor por defecto.
 	 * Establece el valor inicial, por defecto, de cada uno de los atributos.
 	 * Llama al constructor convencional de la propia clase.
+	 * @throws ModeloException 
 	 */
-	public Patron() {
+	public Patron() throws ModeloException {
 		this("NombrePatron", new byte[1][1]);
 	}
 	
@@ -45,8 +55,9 @@ public class Patron implements Serializable, Cloneable {
 	 * los valores obtenidos de un objeto de su misma clase.
 	 * El atributo esquema es clonado utilizando utilidades de clonación de arrays.
 	 * @param p
+	 * @throws ModeloException 
 	 */
-	public Patron(Patron p) {
+	public Patron(Patron p) throws ModeloException {
 		this(p.nombre, p.esquema);
 		this.esquema = new byte[p.esquema.length][p.esquema.length];	
 		for (int i=0; i <p.esquema.length; i++) {
@@ -62,10 +73,10 @@ public class Patron implements Serializable, Cloneable {
 	 * @param filas
 	 * @param columnas
 	 * @param imagenPatron
+	 * @throws ModeloException 
 	 */
-	public Patron(String nombre, int filas, int columnas, String imagenPatron) {
+	public Patron(String nombre, int filas, int columnas, String imagenPatron) throws ModeloException {
 		setNombre(nombre);
-		
 		byte [][] esquema = new byte [filas][columnas];
 		//...
 		setEsquema(esquema);
@@ -85,30 +96,54 @@ public class Patron implements Serializable, Cloneable {
 		return esquema;
 	}
 
-	/**
-	 * @param nombre the nombre to set
-	 */
-	public void setNombre(String nombre) {
-		if (nombre != null) {
+	public void setNombre(String nombre) throws ModeloException {	
+		if (nombreValido(nombre)) {
 			this.nombre = nombre;
+			return;
 		}
-		else {
-			this.nombre = "NombrePatron";
-		}
+		throw new ModeloException("El nombre: " + nombre + " no es válido...");
 	}
 
 	/**
-	 * @param esquema the esquema to set
+	 * Comprueba que el nombre sea correcto.
+	 * @param nombre.
+	 * @return true si cumple.
 	 */
-	public void setEsquema(byte[][] esquema) {
-		
-		if (esquema == null || esquema.length == 0) {
-			byte[][] aux = {{0}};
-			this.esquema  = aux;
-		}		
-		else {
+	private boolean nombreValido(String nombre) {
+		assert nombre != null;
+		return	nombre.matches(Formato.PATRON_NOMBRE_PATRON_JV) && nombreNoRepetido(nombre);
+	}
+
+	/**
+	 * Comprueba que el nombre es único.
+	 * @param nombre.
+	 * @return true si cumple.
+	 */
+	private boolean nombreNoRepetido(String nombre) {
+		// Comprueba que nombre no está repetido buscándolo en el almacen de datos.
+		// --Pendiente--
+		return true;
+	}
+
+	public void setEsquema(byte[][] esquema) throws ModeloException {
+		if (esquemaValido(esquema)) {
 			this.esquema = esquema;
+			return;
 		}
+		throw new ModeloException("El esquema del patrón celular: " + esquema + " no es válido...");
+	}
+
+	/**
+	 * Comprueba que esquema tiene tamaño.
+	 * @param esquema.
+	 * @return true si cumple.
+	 */
+	private boolean esquemaValido(byte[][] esquema) {
+		assert esquema != null;
+		if (esquema.length > 0) {
+			return true;
+		}
+		return false;
 	}
 	
 	@Override
@@ -161,7 +196,11 @@ public class Patron implements Serializable, Cloneable {
 	@Override
 	public Object clone() {
 		// Utiliza el constructor copia.
-		return new Patron(this);
+		Object clon = null;
+		try {
+			clon = new Patron(this);
+		} catch (ModeloException e) { }
+		return clon;
 	}
 	
 } // class

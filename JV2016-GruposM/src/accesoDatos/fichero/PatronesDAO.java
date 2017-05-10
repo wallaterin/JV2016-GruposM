@@ -23,6 +23,7 @@ import java.util.List;
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
 import config.Configuracion;
+import modelo.ModeloException;
 import modelo.Patron;
 
 public class PatronesDAO implements OperacionesDAO, Persistente {
@@ -75,7 +76,13 @@ public class PatronesDAO implements OperacionesDAO, Persistente {
 			{ 0, 1, 1, 1 }, 
 			{ 0, 0, 0, 0 }
 		};
-		Patron patronDemo = new Patron("PatronDemo", esquemaDemo);
+		Patron patronDemo = null;
+		try {
+			patronDemo = new Patron("PatronDemo", esquemaDemo);
+		} 
+		catch (ModeloException e) {
+			e.printStackTrace();
+		}
 		datosPatrones.add(patronDemo);
 		guardarDatos(datosPatrones);
 	}
