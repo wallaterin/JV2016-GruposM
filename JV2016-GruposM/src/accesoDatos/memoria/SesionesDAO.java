@@ -215,7 +215,7 @@ public class SesionesDAO implements OperacionesDAO {
 	 */
 	@Override
 	public void borrarTodo() {
-		instancia = null;	
+		datosSesiones = new ArrayList<SesionUsuario>();	
 	}
 
 }//class
