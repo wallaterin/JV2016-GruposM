@@ -26,16 +26,20 @@ public class CorreoTest {
 		try {
 			correo2 = new Correo("correo@correo.com");
 		} 
-		catch (ModeloException e) {	}
+		catch (ModeloException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Before
-	public void inicializaDatosPrueba() {
+	public void iniciarlizarDatosPrueba() {
 		try {
 			correo1 = new Correo();
 			correo2 = new Correo("correo@correo.com");
 		} 
-		catch (ModeloException e) {	}
+		catch (ModeloException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@After
@@ -44,47 +48,41 @@ public class CorreoTest {
 	}
 	
 	// Test con DATOS VALIDOS
-
 	@Test
 	public void testCorreoConvencional() {
-		assertNotNull(correo2);
 		assertEquals(correo2.getTexto(), "correo@correo.com");
 	}
 
 	@Test
 	public void testCorreoDefecto() {
-		assertNotNull(correo1);
 		assertEquals(correo1.getTexto(), "correo@correo.com");
 	}
 
 	@Test
 	public void testCorreoCopia() {
 		try {
-			correo1 = new Correo(correo2);
+			assertEquals(correo2, new Correo(correo2));
 		} 
 		catch (ModeloException e) {	}
-
-		assertNotSame(correo2, correo1);
 	}
 
+	@Test
+	public void testGetTexto() {
+		assertEquals(correo2.getTexto(), "correo@correo.com");
+	}
+	
 	@Test
 	public void testSetTexto() {
 		try {
 			correo2.setTexto("correo@correo.com");
 		} 
 		catch (ModeloException e) {	}
-		
 		assertEquals(correo2.getTexto(), "correo@correo.com");
 	}
 
 	@Test
 	public void testCorreoAutentico() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetTexto() {
-		assertEquals(correo2.getTexto(), "correo@correo.com");
+		assertTrue(correo2.correoAutentico("correo@correo.com"));
 	}
 
 	@Test
@@ -94,18 +92,15 @@ public class CorreoTest {
 	
 	@Test
 	public void testEqualsObject() {
-		Correo correo = null;
-		try {
-			correo = new Correo("correo@correo.com");
+		try {		
+			assertTrue(correo1.equals(new Correo("correo@correo.com")));
 		} 
 		catch (ModeloException e) {	}
-		assertEquals(correo, correo1);
 	}
 
 	@Test
 	public void testClone() {
-		Correo correo = (Correo) correo2.clone();
-		assertNotSame(correo, correo2);
+		assertEquals(correo2, correo2.clone());
 	}
 
 	@Test
@@ -116,25 +111,26 @@ public class CorreoTest {
 	// Test con DATOS NO VALIDOS
 		@Test
 		public void testCorreoConvencionalTextoNull() {	
-			Correo correo = null;
+
 			try {
 				String texto = null;
-				correo = new Correo(texto);
+				new Correo(texto);
 				fail("No debe llegar aquí...");
 			} 
-			catch (ModeloException e) { }
-			assertNull(correo);
+			catch (AssertionError | ModeloException e) {
+				assertTrue(true);
+			}
 		}
 
 		@Test
 		public void testCorreoConvencionalTextoMalFormato() {	
-			Correo correo = null;
 			try {
-				correo = new Correo("correocorreo.com");
+				new Correo("correocorreo.com");
 				fail("No debe llegar aquí...");
 			} 
-			catch (ModeloException e) { }
-			assertNull(correo);
+			catch (ModeloException e) {
+				assertTrue(true);
+			}
 		}
 
 		@Test
@@ -143,8 +139,9 @@ public class CorreoTest {
 				correo1.setTexto(null);
 				fail("No debe llegar aquí...");
 			} 
-			catch (ModeloException e) { }
-			assertEquals(correo1.getTexto(), "correo@correo.com");
+			catch (AssertionError | ModeloException e) {
+				assertTrue(true);
+			}
 		}
 
 		@Test
@@ -153,7 +150,9 @@ public class CorreoTest {
 				correo1.setTexto("correocorreo.com");
 				fail("No debe llegar aquí...");
 			} 
-			catch (ModeloException e) { }
-			assertEquals(correo1.getTexto(), "correo@correo.com");
+			catch (ModeloException e) {
+				assertTrue(true);
+			}
 		}
+		
 } //class

@@ -4,7 +4,7 @@
  *  Colabora en el patron MVC
  *  @since: prototipo2.1
  *  @source: VistaSesionTexto.java 
- *  @version: 2.1 - 2017.05.11
+ *  @version: 2.1 - 2017.05.08
  *  @author: ajp
  */
 
@@ -21,12 +21,10 @@ public class VistaSesionTexto {
 	}
 	
 	public String pedirIdUsr() {	
-		System.out.println("Introduce el idUsr: ");
 		return teclado.nextLine();
 	}
 	
-	public String pedirClaveAcceso() {	
-		System.out.println("Introduce clave acceso: ");
+	public String pedirClaveAcceso() {
 		return teclado.nextLine();
 	}
 

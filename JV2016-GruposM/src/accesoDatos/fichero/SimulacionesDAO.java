@@ -5,9 +5,8 @@
  * Colabora en el patron Fachada.
  * @since: prototipo2.0
  * @source: SimulacionesDAO.java 
- * @version: 2.1 - 2017.04.09 
+ * @version: 2.1 - 2017.05.14 
  * @author: ajp
- * @author:Salva Mármol -Grupo1
  */
 
 package accesoDatos.fichero;
@@ -33,6 +32,7 @@ import java.util.List;
 
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
+import accesoDatos.memoria.UsuariosDAO;
 import config.Configuracion;
 import modelo.ModeloException;
 import modelo.Mundo;
@@ -212,11 +212,15 @@ public class SimulacionesDAO implements OperacionesDAO, Persistente {
 		Simulacion aux = null;
 		try {
 			aux = new Simulacion();
-		} 
-		catch (ModeloException e) { }
+		} catch (ModeloException e) {
+			e.printStackTrace();
+		}
 		aux.setUsr(UsuariosDAO.getInstancia().obtener(idUsr));
-		//Busca posición inserción ordenada por idUsr + fecha. La última para el mismo usuario.
-		return separarSimulacionesUsr(obtenerPosicion(aux.getIdSimulacion()) - 1);
+		// Busca posición inserción (negativa base 1) ordenada por idUsr + fecha. 
+		// La última para el mismo usuario.
+		int posicion = -obtenerPosicion(aux.getIdSimulacion());
+		// Separa las simulaciones del mismo usuario.
+		return separarSimulacionesUsr(posicion-2);
 	}
 
 	/**
@@ -301,6 +305,20 @@ public class SimulacionesDAO implements OperacionesDAO, Persistente {
 		}
 		return listado.toString();
 	}
+	
+	/**
+	 * Obtiene el listado de todos los identificadores de las simulaciones almacenadas.
+	 * @return el texto con los identificadores.
+	 */
+	public String listarIdSimulaciones() {
+		StringBuilder listado = new StringBuilder();
+		for (Simulacion simulacion: datosSimulaciones) {
+			if (simulacion != null) {
+				listado.append("\n" + simulacion.getIdSimulacion());
+			}
+		}
+		return listado.toString();
+	}
 
 	/**
 	 * Elimina todos las simulaciones almacenadas y regenera la demo predeterminada.
@@ -308,6 +326,7 @@ public class SimulacionesDAO implements OperacionesDAO, Persistente {
 	@Override
 	public void borrarTodo() {
 		datosSimulaciones = new ArrayList<Simulacion>();
+		cargarPredeterminados();
 	}
 
 } //class

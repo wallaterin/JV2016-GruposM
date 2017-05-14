@@ -10,6 +10,10 @@
 package accesoUsr.control;
 
 import accesoDatos.DatosException;
+
+import java.awt.List;
+import java.util.ArrayList;
+
 import accesoDatos.Datos;
 import accesoUsr.Presentacion;
 import accesoUsr.VistaTexto.VistaSesionTexto;
@@ -18,6 +22,7 @@ import modelo.ClaveAcceso;
 import modelo.ModeloException;
 import modelo.SesionUsuario;
 import modelo.SesionUsuario.EstadoSesion;
+import modelo.Simulacion;
 import modelo.Usuario;
 import util.Fecha;
 
@@ -27,26 +32,25 @@ public class ControlSesion {
 	private SesionUsuario sesion;
 	private Datos fachada;
 
-	public ControlSesion(String idUsr) {
-		initControlSesion(idUsr);
-	}
-	
 	public ControlSesion() {
 		this(null);
 	}
 
-	/**
-	 * Inicialización y secuencia principal del control de sesión.
-	 * @param credencialUsr ya obtenida, puede ser null.
-	 */
+	public ControlSesion(String idUsr) {
+		initControlSesion(idUsr);
+	}
+
 	private void initControlSesion(String idUsr) {
 		fachada = new Datos();
 		vista = new VistaSesionTexto();
-		iniciarSesionUsuario(idUsr); 
-		new Presentacion().arrancarSimulacion();
-		//new ControlSimulacion(fachada.obtenerSimulacionesUsuario(idUsr).get(0));
+		vista.mostrar("JV-2016");
+		iniciarSesionUsuario(idUsr);
+		ArrayList<Simulacion> simulacionesUsrActivo = new ArrayList<Simulacion>(fachada.obtenerSimulacionesUsuario(idUsr));
+		
+		// La simulación predeterminada-demo es la primera del usuario predeterminado Invitado
+		new ControlSimulacion(simulacionesUsrActivo.get(0));		
 		fachada.cerrar();
-		vista.mostrar("Fin de programa...");
+		vista.mostrar("\nFin de programa...");
 	}
 
 	/**
@@ -57,14 +61,18 @@ public class ControlSesion {
 	private void iniciarSesionUsuario(String idUsr) {
 		int intentos = new Integer(Configuracion.get().getProperty("sesion.intentosFallidos"));			// Contandor de intentos.
 		String credencialUsr = idUsr;
-		vista.mostrar("JV-2016");
 		do {
 			if (idUsr == null) {
 				// Pide credencial usuario si llega null.
+				vista.mostrar("Introduce el idUsr: ");
 				credencialUsr = vista.pedirIdUsr();	
 			}
+			else {
+				vista.mostrar(credencialUsr);
+			}	
 			credencialUsr = credencialUsr.toUpperCase();
 			// Pide contraseña.
+			vista.mostrar("Introduce clave acceso: ");
 			String clave = vista.pedirClaveAcceso();
 
 			// Busca usuario coincidente con credencial.
@@ -78,7 +86,7 @@ public class ControlSesion {
 					}
 				} 
 				catch (ModeloException e) {
-					//e.printStackTrace();
+					e.printStackTrace();
 				}
 				intentos--;
 				vista.mostrar("Credenciales incorrectas...");
@@ -86,9 +94,9 @@ public class ControlSesion {
 			}
 		}
 		while (intentos > 0);
-
+	
 		if (intentos <= 0){
-			vista.mostrar("Fin de programa...");
+			vista.mostrar("Fin del programa...");
 			fachada.cerrar();
 			System.exit(0);	
 		}
