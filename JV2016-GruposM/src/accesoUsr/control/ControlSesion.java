@@ -10,12 +10,9 @@
 package accesoUsr.control;
 
 import accesoDatos.DatosException;
-
-import java.awt.List;
 import java.util.ArrayList;
 
 import accesoDatos.Datos;
-import accesoUsr.Presentacion;
 import accesoUsr.VistaTexto.VistaSesionTexto;
 import config.Configuracion;
 import modelo.ClaveAcceso;
@@ -45,7 +42,7 @@ public class ControlSesion {
 		vista = new VistaSesionTexto();
 		vista.mostrar("JV-2016");
 		iniciarSesionUsuario(idUsr);
-		ArrayList<Simulacion> simulacionesUsrActivo = new ArrayList<Simulacion>(fachada.obtenerSimulacionesUsuario(idUsr));
+		ArrayList<Simulacion> simulacionesUsrActivo = new ArrayList<Simulacion>(fachada.obtenerSimulacionesUsuario(usrSesion.getIdUsr()));
 		
 		// La simulación predeterminada-demo es la primera del usuario predeterminado Invitado
 		new ControlSimulacion(simulacionesUsrActivo.get(0));		
