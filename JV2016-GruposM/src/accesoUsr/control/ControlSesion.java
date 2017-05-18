@@ -26,6 +26,7 @@ import modelo.Usuario;
 import util.Fecha;
 
 public class ControlSesion {
+  
 	private VistaSesion vista;
 	private Usuario usrSesion;
 	private SesionUsuario sesion;
