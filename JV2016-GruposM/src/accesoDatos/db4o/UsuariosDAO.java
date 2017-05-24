@@ -11,12 +11,12 @@
 
 package accesoDatos.db4o;
 
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.db4o.query.Query;
@@ -32,6 +32,7 @@ import modelo.Nif;
 import modelo.Usuario;
 import modelo.Usuario.RolUsuario;
 import util.Fecha;
+
 
 public class UsuariosDAO  implements OperacionesDAO {
 
@@ -56,7 +57,7 @@ public class UsuariosDAO  implements OperacionesDAO {
 	 *  Método estático de acceso a la instancia única.
 	 *  Si no existe la crea invocando al constructor interno.
 	 *  Utiliza inicialización diferida.
-	 *  Sólo se crea una vez; instancia única -patrón singleton-
+	 *  Sólo se crea una vez; instancia única -Usuario singleton-
 	 *  @return instancia
 	 */
 	public static UsuariosDAO getInstancia() {
@@ -202,9 +203,9 @@ public class UsuariosDAO  implements OperacionesDAO {
 	@Override
 	public Usuario baja(String nombre) throws DatosException {
 		assert (nombre != null);
-		int posicion = obtenerPosicion(nombre); 									// En base 1
+		int posicion = obtenerPosicion(nombre); 									
 		if (posicion > 0) {
-			return datosUsr.remove(posicion - 1); 								// En base 0
+			return datosUsr.remove(posicion - 1); 								
 		}
 		throw new DatosException("(BAJA) El Usuario: " + nombre + " no existe...");
 	}
