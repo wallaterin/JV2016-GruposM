@@ -41,16 +41,17 @@ public class UsuariosDAO  implements OperacionesDAO {
 
 	// Elementos de almacenamiento.
 	private ObjectContainer db;
-	private static Map<String,String> equivalenciasId;
-	private static ArrayList<Usuario> datosUsr;
+	
 	/**
 	 * Constructor por defecto de uso interno.
 	 * Sólo se ejecutará una vez.
 	 */
-	private UsuariosDAO()  {
+	private UsuariosDAO() {
 		db = Conexion.getDB();
-		equivalenciasId = new Hashtable<String, String>();
-		cargarPredeterminados();
+		db.store(new Hashtable<String,String>());
+		if (obtener("III1R") == null) {
+			cargarPredeterminados();
+		}
 	}
 
 	/**
@@ -104,143 +105,129 @@ public class UsuariosDAO  implements OperacionesDAO {
 		 */
 	}
 
+	
 	//OPERACIONES DAO
 	/**
-	 * Búsqueda de usuario dado su idUsr, el correo o su nif.
-	 * @param id - el id de Usuario a buscar.
-	 * @return - el Usuario encontrado o null si no existe.
-	 */
+	 * Obtiene un Usuario dado su idUsr.
+	 * @param id - el idUsr de Usuario a buscar.
+	 * @return - el Usuario encontrado; null si no existe.
+	 */	
 	@Override
 	public Usuario obtener(String idUsr) {
-		
-		ObjectSet <Usuario> result;
+		idUsr = obtenerEquivalencia(idUsr);
+		ObjectSet<Usuario> result;
 		Query consulta = db.query();
 		consulta.constrain(Usuario.class);
-		consulta.descend("idUsr").equals(idUsr);
-		result=consulta.execute();
-		if (result.size()>0){
+		consulta.descend("idUsr").constrain(idUsr);
+		result = consulta.execute();
+		if (result.size() > 0) {
 			return result.get(0);
-		}
+		}	
 		return null;
 	}
 
 	/**
-	 *  Obtiene por búsqueda binaria, la posición que ocupa, o ocuparía,  un usuario en 
-	 *  la estructura.
-	 *	@param IdUsr - id de Usuario a buscar.
-	 *	@return - la posición, en base 1, que ocupa un objeto o la que ocuparía (negativo).
-	 */
-	
-	private int obtenerPosicion(String idUsr) {
-		int comparacion;
-		int inicio = 0;
-		int fin = datosUsr.size() - 1;
-		int medio = 0;
-		while (inicio <= fin) {
-			medio = (inicio + fin) / 2;			// Calcula posición central.
-			// Obtiene > 0 si idUsr va después que medio.
-			comparacion = idUsr.compareTo(datosUsr.get(medio).getIdUsr());
-			if (comparacion == 0) {			
-				return medio + 1;   			// Posción ocupada, base 1	  
-			}		
-			if (comparacion > 0) {
-				inicio = medio + 1;
-			}			
-			else {
-				fin = medio - 1;
-			}
-		}	
-		return -(inicio + 1);					// Posición que ocuparía -negativo- base 1
-	}
-
-	/**
-	 * Búsqueda de Usuario dado un objeto, reenvía al método que utiliza idUsr.
+	 * Obtiene un Usuario dado un objeto, reenvía al método que utiliza idUsr.
 	 * @param obj - el Usuario a buscar.
 	 * @return - el Usuario encontrado; null si no existe.
 	 */
 	@Override
 	public Usuario obtener(Object obj)  {
-		return this.obtener(((Usuario) obj).getIdUsr());
-	}	
+		return obtener(((Usuario) obj).getIdUsr());
+	}
 
 	/**
-	 *  Alta de un nuevo usuario en orden y sin repeticiones según el campo idUsr. 
-	 *  Localiza previamente la posición de inserción, en orden, que le corresponde.
-	 *  Si hay coincidencia de identificador hace 23 intentos de variar la última letra
-	 *  procedente del NIF. Llama al generarVarianteIdUsr() de la clase Usuario.
+	 * Obtiene todos los usuarios almacenados.
+	 * @return - la List con todos los usuarios.
+	 */
+	@Override
+	public List<Usuario> obtenerTodos() {
+		Query consulta = db.query();
+		consulta.constrain(Usuario.class);
+		return  consulta.execute();
+	}
+	
+	/**
+	 *  Alta de un nuevo usuario  según el idUsr. 
 	 *	@param obj - Objeto a almacenar.
-	 *  @throws DatosException - si ya existe.
+	 *  @throws DatosException - si ya existe y están en uso todas las variantes.
 	 */
 	@Override
 	public void alta(Object obj) throws DatosException {
-		assert obj != null;
-		Usuario usrNuevo = (Usuario) obj;										// Para conversión cast
-		int posicionInsercion = obtenerPosicion(usrNuevo.getNombre()); 
-		if (posicionInsercion < 0) {
-			datosUsr.add(-posicionInsercion - 1, usrNuevo); 			// Inserta la sesión en orden.
-			return;
+		Usuario usrNuevo = (Usuario) obj;
+		Usuario usrPrevio = obtener(usrNuevo.getIdUsr());
+		if (usrPrevio == null) {
+			db.store(usrNuevo);
+			registrarEquivalenciaId(usrNuevo);
 		}
-		throw new DatosException("(ALTA) El Usuario: " + usrNuevo.getNombre() + " ya existe...");
-	}
-
-	/**
-	 *  Añade nif y correo como equivalencias de idUsr para el inicio de sesión. 
-	 *	@param usr - Usuario a registrar equivalencias. 
-	 */
-	private void registrarEquivalenciaId(Usuario usr) {
-		assert usr != null;
-		equivalenciasId.put(usr.getIdUsr(), usr.getIdUsr());
-		equivalenciasId.put(usr.getNif().getTexto(), usr.getIdUsr());
-		equivalenciasId.put(usr.getCorreo().getTexto(), usr.getIdUsr());
-	}
+		else {
+			boolean condicion = !(usrNuevo.getCorreo().equals(usrPrevio.getCorreo())
+					|| usrNuevo.getNif().equals(usrPrevio.getNif()));
+			if (condicion) {
+				int intentos = "ABCDEFGHJKLMNPQRSTUVWXYZ".length();				// 24 letras
+				do {
+					usrNuevo.generarVarianteIdUsr();
+					usrPrevio = obtener(usrNuevo.getIdUsr());
+					if (usrPrevio == null) {
+						db.store(usrNuevo);
+						registrarEquivalenciaId(usrNuevo);
+						return;
+					}
+					intentos--;
+				} while (intentos > 0);
+			}
+			throw new DatosException("(ALTA) El Usuario: " + usrNuevo.getIdUsr() + " ya existe...");
+		}
+	} 
 
 	/**
 	 * Elimina el objeto, dado el id utilizado para el almacenamiento.
-	 * @param idUsr - el identificador del objeto a eliminar.
+	 * @param id - el identificador del objeto a eliminar.
 	 * @return - el Objeto eliminado.
 	 * @throws DatosException - si no existe.
 	 */
 	@Override
-	public Usuario baja(String nombre) throws DatosException {
-		assert (nombre != null);
-		int posicion = obtenerPosicion(nombre); 									
-		if (posicion > 0) {
-			return datosUsr.remove(posicion - 1); 								
+	public Usuario baja(String id) throws DatosException {
+		Usuario usr = obtener(id);
+		if (usr != null) {
+			borrarEquivalenciaId(usr);
+			db.delete(usr);
 		}
-		throw new DatosException("(BAJA) El Usuario: " + nombre + " no existe...");
-	}
+		else {
+			throw new DatosException("(BAJA) El usuario: " + id + " no existe...");
+		}
+		return usr;	
+	} 
 
 	/**
-	 *  Actualiza datos de un Usuario reemplazando el almacenado por el recibido. 
-	 *  No admitirá cambios en el idUsr.
-	 *	@param obj - Usuario con los cambios.
-	 *  @throws DatosException - si no existe.
+	 * Actualiza datos de un Usuario reemplazando el almacenado por el recibido. 
+	 * @param obj - Usuario con los cambios.
+	 * @return 
+	 * @throws DatosException - si no existe.
 	 */
 	@Override
-	public void actualizar(Object obj) throws DatosException, ModeloException{
-		Usuario usrActualizado = (Usuario) obj;
-		Usuario usrAlmacenado = obtener(usrActualizado);
-		if (usrAlmacenado != null){
-			usrAlmacenado.setNombre(usrActualizado.getNombre());
-			usrAlmacenado.setApellidos(usrActualizado.getApellidos());
-			usrAlmacenado.setDomicilio(usrActualizado.getDomicilio());
-			usrAlmacenado.setCorreo(usrActualizado.getCorreo());
-			usrAlmacenado.setFechaNacimiento(usrActualizado.getFechaNacimiento());
-			usrAlmacenado.setNif(usrActualizado.getNif());
-			usrAlmacenado.setFechaAlta(usrActualizado.getFechaAlta());
-			usrAlmacenado.setRol(usrActualizado.getRol());
-			db.store(usrAlmacenado);
-			}
-		throw new DatosException("(ACTUALIZAR) El Usuario: " + usrActualizado.getNombre() + " no existe...");
+	public void actualizar(Object obj) throws DatosException {
+		Usuario usr = (Usuario) obj;
+		Usuario usrAux = (Usuario) obtener(usr.getIdUsr());
+		if(usrAux != null) {
+			cambiarEquivalenciaId(usrAux, usr);
+			try {
+				usrAux.setNif(usr.getNif());
+				usrAux.setNombre(usr.getNombre());
+				usrAux.setApellidos(usr.getApellidos());
+				usrAux.setDomicilio(usr.getDomicilio());
+				usrAux.setCorreo(usr.getCorreo());
+				usrAux.setFechaNacimiento(usr.getFechaNacimiento());
+				usrAux.setFechaAlta(usr.getFechaAlta());
+				usrAux.setRol(usr.getRol());
+			} 
+			catch (ModeloException e) { }
+			db.store(usrAux);
+			return;
 		}
+		throw new DatosException("(ACTUALIZAR) El usuario: " + usr.getIdUsr() + " no existe...");
+	} 
 
-	
-	private List<Usuario> obtenerTodos() {
-		Query consulta = db.query();
-		consulta.constrain(Usuario.class);
-		return consulta.execute();
-		
-	}
 	/**
 	 * Obtiene el listado de todos los usuarios almacenados.
 	 * @return el texto con el volcado de datos.
@@ -248,32 +235,109 @@ public class UsuariosDAO  implements OperacionesDAO {
 	@Override
 	public String listarDatos() {
 		StringBuilder listado = new StringBuilder();
-		for (Usuario usuario: obtenerTodos()) {
-			if (usuario != null) {
-				listado.append("\n" + usuario); 
+		for (Usuario usr: obtenerTodos()) {
+			listado.append("\n" + usr);
+		}
+		return listado.toString();
+	}
+	
+	/**
+	 * Obtiene el listado de todos los identificadores de usuarios almacenados.
+	 * @return el texto con el volcado de datos.
+	 */
+	@Override
+	public String listarId() {
+		StringBuilder listado = new StringBuilder();
+		for (Usuario usr: obtenerTodos()) {
+			if (usr != null) {
+				listado.append(usr.getIdUsr()+ "\n");
 			}
 		}
 		return listado.toString();
 	}
-
 	
 	/**
-	 * Elimina todos los usuarios almacenados y regenera los predeterminados.
+	 * Quita todos los objetos Usuario y vacía el mapa de equivalencias de idUsr.
 	 */
 	@Override
 	public void borrarTodo() {
-		for (Usuario usuario: obtenerTodos()) {
-			db.delete(usuario);
+		// Elimina cada uno de los obtenidos
+		for (Usuario usr: obtenerTodos()) {
+			db.delete(usr);
 		}
+		// Quita todas las equivalencias
+		Map<String,String> mapaEquivalencias = obtenerMapaEquivalencias();
+		mapaEquivalencias.clear();
+		db.store(mapaEquivalencias);
+		cargarPredeterminados();
+	}
+
+	//GESTION equivalencias id
+	/**
+	 * Obtiene el idUsr usado internamente a partir de otro equivalente.
+	 * @param id - la clave alternativa. 
+	 * @return - El idUsr equivalente.
+	 */
+	public String obtenerEquivalencia(String id) {
+		return obtenerMapaEquivalencias().get(id);
 	}
 
 	/**
-	 *  Método vacío por requerimiento de la interfaz.
+	 * Obtiene el mapa de equivalencias de id para idUsr.
+	 * @return el Hashtable almacenado.
 	 */
-	@Override
-	public String listarId() {
-		
-		return null;
+	private Map<String,String> obtenerMapaEquivalencias() {
+		//Obtiene mapa de equivalencias de id de acceso
+		Query consulta = db.query();
+		consulta.constrain(Hashtable.class);
+		ObjectSet <Hashtable<String,String>> result = consulta.execute();
+		return result.get(0);	
 	}
-	
+
+	/**
+	 * Registra las equivalencias de nif y correo para un idUsr.
+	 * @param usuario
+	 */
+	private void registrarEquivalenciaId(Usuario usuario) {
+		//Obtiene mapa de equivalencias
+		Map<String,String> mapaEquivalencias = obtenerMapaEquivalencias();
+		//Registra equivalencias 
+		mapaEquivalencias.put(usuario.getIdUsr().toUpperCase(), usuario.getIdUsr().toUpperCase());
+		mapaEquivalencias.put(usuario.getNif().getTexto().toUpperCase(), usuario.getIdUsr().toUpperCase());
+		mapaEquivalencias.put(usuario.getCorreo().getTexto().toUpperCase(), usuario.getIdUsr().toUpperCase());
+		//actualiza datos
+		db.store(mapaEquivalencias);	
+	}
+
+	/**
+	 * Elimina las equivalencias de nif y correo para un idUsr.
+	 * @param usuario - el usuario para eliminar sus equivalencias de idUsr.
+	 */
+	private void borrarEquivalenciaId(Usuario usuario) {
+		//Obtiene mapa de equivalencias
+		Map<String,String> mapaEquivalencias = obtenerMapaEquivalencias();
+		//Borra equivalencias 
+		mapaEquivalencias.remove(usuario.getIdUsr());
+		mapaEquivalencias.remove(usuario.getNif().getTexto());
+		mapaEquivalencias.remove(usuario.getCorreo().getTexto());
+		//actualiza datos
+		db.store(mapaEquivalencias);	
+	}
+
+	/**
+	 * Actualiza las equivalencias de nif y correo para un idUsr
+	 * @param usrAntiguo - usuario con id's antiguos
+	 * @param usrNuevo - usuario con id's nuevos
+	 */
+	private void cambiarEquivalenciaId(Usuario usrAntiguo, Usuario usrNuevo) {
+		//Obtiene mapa de equivalencias
+		Map<String,String> mapaEquivalencias = obtenerMapaEquivalencias();
+		//Cambia equivalencias 
+		mapaEquivalencias.replace(usrAntiguo.getIdUsr(), usrNuevo.getIdUsr().toUpperCase());
+		mapaEquivalencias.replace(usrAntiguo.getNif().getTexto(), usrNuevo.getIdUsr().toUpperCase());
+		mapaEquivalencias.replace(usrAntiguo.getCorreo().getTexto(), usrNuevo.getIdUsr().toUpperCase());
+		//actualiza datos
+		db.store(mapaEquivalencias);
+	}
+
 } //class
